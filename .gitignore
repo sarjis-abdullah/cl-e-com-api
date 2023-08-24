@@ -13,7 +13,8 @@ benchmarks/graphs
 # https://git-scm.com/docs/gitignore
 
 .idea
-src/.env
+.env
 .env
 .DS_Store
 dist/
+.env

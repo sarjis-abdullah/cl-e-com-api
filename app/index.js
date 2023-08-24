@@ -5,6 +5,7 @@ const dotenv     = require("dotenv");
 
 dotenv.config();
 const taskRoutes = require('./routes/taskRoutes');
+const userRoutes = require('./routes/userRoutes');
 const { notFound, defaultError } = require('./middlewares/error/errorMiddleware');
 
 const app = express();
@@ -17,7 +18,8 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 });
 
-app.use('/api/tasks', taskRoutes);
+app.use('/api/task', taskRoutes);
+app.use('/api/user', userRoutes);
 
 app.use(notFound);
 

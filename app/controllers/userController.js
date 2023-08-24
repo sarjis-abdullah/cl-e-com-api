@@ -1,4 +1,10 @@
-const Model = require('../models/taskModel');
+const { userRegisterSchema } = require('../middlewares/user');
+const Model = require('../models/userModel');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const dotenv     = require("dotenv");
+
+dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
@@ -9,17 +15,35 @@ exports.getAll = async (req, res) => {
   }
 };
 
-exports.create = async (req, res) => {
+exports.register = async (req, res) => {
   try {
-    const { title, description } = req.body
-    const data = {
-      title, 
-      description, 
-      completed: false
+    const newUser = new Model(req.body);
+    const savedUser = await newUser.save();
+    res.status(201).json(savedUser);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.login = async (req, res) => {
+  try {
+    const {email, password} = req.body
+    const user = await Model.findOne({ email: email });
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
-    const item = new Model(data);
-    const savedItem = await item.save();
-    res.status(201).json(savedItem);
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+    
+
+    const token = jwt.sign({ userId: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token, user });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

@@ -4,14 +4,14 @@ const { validateCreateTask, validateUpdateTask } = require('../validation/task')
 
 const router = express.Router();
 
-router.get('/', taskController.getAllTasks);
+router.get('/', taskController.getAll);
 
-router.post('/', validateCreateTask, taskController.createTask);
+router.post('/', validateCreateTask, taskController.create);
 
-router.get('/:id', taskController.getTaskById);
+router.get('/:id', taskController.getById);
 
-router.patch('/:id', validateUpdateTask, taskController.updateTask);
+router.patch('/:id', validateUpdateTask, taskController.update);
 
-router.delete('/:id', taskController.deleteTask);
+router.delete('/:id', taskController.delete);
 
 module.exports = router;
