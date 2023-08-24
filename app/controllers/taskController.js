@@ -15,10 +15,10 @@ exports.createTask = async (req, res) => {
     const data = {
       title, 
       description, 
-      completed: true
+      completed: false
     }
     // console.log(data, 12345);
-    const task = new Task(req.body);
+    const task = new Task(data);
     const savedTask = await task.save();
     res.status(201).json(savedTask);
   } catch (err) {

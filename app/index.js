@@ -5,6 +5,7 @@ const dotenv     = require("dotenv");
 
 dotenv.config();
 const taskRoutes = require('./routes/taskRoutes');
+const { notFound, defaultError } = require('./middlewares/error/errorMiddleware');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,9 +17,11 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 });
 
-console.log(process.env.PORT, "Bangla");
-
 app.use('/api/tasks', taskRoutes);
+
+app.use(notFound);
+
+app.use(defaultError);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
