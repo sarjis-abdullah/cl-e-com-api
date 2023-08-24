@@ -17,7 +17,6 @@ exports.createTask = async (req, res) => {
       description, 
       completed: false
     }
-    // console.log(data, 12345);
     const task = new Task(data);
     const savedTask = await task.save();
     res.status(201).json(savedTask);
