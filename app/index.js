@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 });
 
-console.log(process.env.PORT, process.env.MONGO_URI);
+console.log(process.env.PORT, "Bangla");
 
 app.use('/api/tasks', taskRoutes);
 
