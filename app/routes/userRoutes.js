@@ -1,6 +1,6 @@
 const express = require('express');
 const taskController = require('../controllers/userController');
-const { validateLogin, validateRegistration, checkDuplicate } = require('../middlewares/user');
+const { validateLogin, validateRegistration, checkDuplicate } = require('../middlewares/userMiddleware');
 
 const router = express.Router();
 

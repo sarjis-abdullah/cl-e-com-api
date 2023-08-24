@@ -6,7 +6,7 @@ const dotenv     = require("dotenv");
 dotenv.config();
 const taskRoutes = require('./routes/taskRoutes');
 const userRoutes = require('./routes/userRoutes');
-const { notFound, defaultError } = require('./middlewares/error/errorMiddleware');
+const { notFound, defaultError } = require('./middlewares/errorMiddleware');
 
 const app = express();
 const port = process.env.PORT || 3000;

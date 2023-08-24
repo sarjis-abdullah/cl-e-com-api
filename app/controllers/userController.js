@@ -1,4 +1,4 @@
-const { userRegisterSchema } = require('../middlewares/user');
+const { userRegisterSchema } = require('../middlewares/userMiddleware');
 const Model = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -6,9 +6,15 @@ const dotenv     = require("dotenv");
 
 dotenv.config();
 
+const getUser = (dbUser)=> {
+  const response = dbUser.toObject();
+  delete response.password
+  return response
+}
+
 exports.getAll = async (req, res) => {
   try {
-    const items = await Model.find();
+    const items = await Model.find().select('-password').lean();;
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -19,7 +25,8 @@ exports.register = async (req, res) => {
   try {
     const newUser = new Model(req.body);
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    const response = getUser(savedUser)
+    res.status(201).json(response);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -43,7 +50,9 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign({ userId: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.json({ token, user });
+    const response = getUser(user)
+
+    res.json({ token, user: response });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -55,7 +64,8 @@ exports.getById = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json(item);
+
+    res.json(getUser(item));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -70,7 +80,7 @@ exports.update = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json(item);
+    res.json(getUser(item));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
