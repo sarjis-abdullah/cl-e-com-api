@@ -1,13 +1,15 @@
 const Joi = require('joi');
 
 const createSchema = Joi.object({
-  name: Joi.string(),
-  description: Joi.string(),
+  productId: Joi.string(),
+  status: Joi.string(),
+  quantity: Joi.number(),
 });
 
 const updateSchema = Joi.object({
-  name: Joi.string(),
-  description: Joi.string(),
+  productId: Joi.string(),
+  status: Joi.string(),
+  quantity: Joi.number(),
 });
 
 module.exports = {

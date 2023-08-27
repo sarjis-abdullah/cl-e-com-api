@@ -1,17 +1,31 @@
 const mongoose = require('mongoose');
 
-const brandSchema = new mongoose.Schema({
-  name: {
-    type: String,
+const stockSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true,
+    validate: {
+      validator: async function(value) {
+        const product = await mongoose.model('Product').findById(value);
+        return product !== null;
+      },
+      message: 'Invalid product ID',
+    },
+  },
+  quantity: {
+    type: Number,
     required: true,
   },
-  description: {
+  status: {
     type: String,
-    required: false,
+    enum: ['In Stock', 'Out of Stock', 'Low Stock'],
+    required: true,
   },
-  // Other brand-related fields can be added here
+  // ...
 });
 
-const Brand = mongoose.model('Brand', brandSchema);
 
-module.exports = Brand;
+const Stock = mongoose.model('Stock', stockSchema);
+
+module.exports = Stock;
