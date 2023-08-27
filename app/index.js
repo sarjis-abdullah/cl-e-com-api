@@ -6,6 +6,7 @@ const dotenv     = require("dotenv");
 dotenv.config();
 const taskRoutes = require('./routes/taskRoutes');
 const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
 const { notFound, defaultError } = require('./middlewares/errorMiddleware');
 
 const app = express();
@@ -20,6 +21,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 app.use('/api/task', taskRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/product', productRoutes);
 
 app.use(notFound);
 

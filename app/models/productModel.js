@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({
-  title: {
+  name: {
     type: String,
     required: true,
   },
@@ -18,22 +18,6 @@ const productSchema = new mongoose.Schema({
       user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-      },
-      rating: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
-  reviews: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-      text: {
-        type: String,
-        required: true,
       },
       rating: {
         type: Number,
@@ -59,7 +43,7 @@ const productSchema = new mongoose.Schema({
       ref: "Category", // Reference to the Category model
     },
   ],
-  brand: {
+  brandId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Brand", // Reference to the Brand model
   },
