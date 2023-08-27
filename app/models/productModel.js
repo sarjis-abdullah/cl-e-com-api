@@ -41,6 +41,30 @@ const productSchema = new mongoose.Schema({
       ref: "Review", // Reference to the Review model
     },
   ],
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    validate: {
+      validator: async function(value) {
+        const item = await mongoose.model('User').findById(value);
+        return item !== null;
+      },
+      message: 'Invalid user ID',
+    },
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    validate: {
+      validator: async function(value) {
+        const item = await mongoose.model('User').findById(value);
+        return item !== null;
+      },
+      message: 'Invalid user ID',
+    },
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -9,7 +9,38 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  // Other Category-related fields can be added here
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    validate: {
+      validator: async function(value) {
+        const item = await mongoose.model('User').findById(value);
+        return item !== null;
+      },
+      message: 'Invalid user ID',
+    },
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    validate: {
+      validator: async function(value) {
+        const item = await mongoose.model('User').findById(value);
+        return item !== null;
+      },
+      message: 'Invalid user ID',
+    },
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Category = mongoose.model('Category', CategorySchema);

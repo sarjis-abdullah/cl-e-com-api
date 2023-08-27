@@ -22,7 +22,38 @@ const stockSchema = new mongoose.Schema({
     enum: ['In Stock', 'Out of Stock', 'Low Stock'],
     required: true,
   },
-  // ...
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    validate: {
+      validator: async function(value) {
+        const item = await mongoose.model('User').findById(value);
+        return item !== null;
+      },
+      message: 'Invalid user ID',
+    },
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    validate: {
+      validator: async function(value) {
+        const item = await mongoose.model('User').findById(value);
+        return item !== null;
+      },
+      message: 'Invalid user ID',
+    },
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 
