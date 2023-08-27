@@ -17,6 +17,8 @@ docker-compose up -d
 View the logs
 
 ```sh
+docker-compose down
+docker-compose up --build
 docker-compose logs -f
 ```
 
