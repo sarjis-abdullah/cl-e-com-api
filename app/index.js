@@ -8,6 +8,7 @@ const taskRoutes = require('./routes/taskRoutes');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const brandRoutes = require('./routes/brandRoutes');
+const stockRoutes = require('./routes/stockRoutes');
 const { notFound, defaultError } = require('./middlewares/errorMiddleware');
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/task', taskRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/brand', brandRoutes);
+app.use('/api/stock', stockRoutes);
 
 app.use(notFound);
 

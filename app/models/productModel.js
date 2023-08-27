@@ -13,18 +13,6 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  ratings: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-      rating: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
   stocks: [
     {
       type: mongoose.Schema.Types.ObjectId,

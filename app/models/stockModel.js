@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 
-const stockSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-  },
-  quantity: {
-    type: Number,
+const brandSchema = new mongoose.Schema({
+  name: {
+    type: String,
     required: true,
   },
-  // ...other stock-related fields
+  description: {
+    type: String,
+    required: false,
+  },
+  // Other brand-related fields can be added here
 });
 
-const Stock = mongoose.model('Stock', stockSchema);
+const Brand = mongoose.model('Brand', brandSchema);
 
-module.exports = Stock;
+module.exports = Brand;
