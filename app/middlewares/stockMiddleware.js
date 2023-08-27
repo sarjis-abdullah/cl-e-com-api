@@ -4,12 +4,14 @@ const createSchema = Joi.object({
   productId: Joi.string(),
   status: Joi.string(),
   quantity: Joi.number(),
+  createdBy: Joi.string(),
 });
 
 const updateSchema = Joi.object({
   productId: Joi.string(),
   status: Joi.string(),
   quantity: Joi.number(),
+  createdBy: Joi.string(),
 });
 
 module.exports = {
