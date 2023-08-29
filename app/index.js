@@ -1,37 +1,40 @@
-const express    = require('express');
-const bodyParser = require('body-parser');
-const mongoose   = require('mongoose');
-const dotenv     = require("dotenv");
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config();
-const taskRoutes = require('./routes/taskRoutes');
-const userRoutes = require('./routes/userRoutes');
-const productRoutes = require('./routes/productRoutes');
-const brandRoutes = require('./routes/brandRoutes');
-const stockRoutes = require('./routes/stockRoutes');
-const categoryRoutes = require('./routes/categoryRoutes');
-const reviewRoutes = require('./routes/reviewRoutes');
+// const taskRoutes = require("./routes/taskRoutes");
+// const userRoutes = require("./routes/userRoutes");
+// const productRoutes = require("./routes/productRoutes");
+// const brandRoutes = require("./routes/brandRoutes");
+// const stockRoutes = require("./routes/stockRoutes");
+// const categoryRoutes = require("./routes/categoryRoutes");
+// const reviewRoutes = require("./routes/reviewRoutes");
 const attachmentRoutes = require('./routes/attachmentRoutes');
-const { notFound, defaultError } = require('./middlewares/errorMiddleware');
+const { notFound, defaultError } = require("./middlewares/errorMiddleware");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }))
+// mongoose.connect(process.env.MONGO_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+app.use(express.static(path.join(__dirname, 'uploads')));
 
-app.use('/api/task', taskRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/product', productRoutes);
-app.use('/api/brand', brandRoutes);
-app.use('/api/stock', stockRoutes);
-app.use('/api/review', reviewRoutes);
+// app.use("/api/task", taskRoutes);
+// app.use("/api/user", userRoutes);
+// app.use("/api/product", productRoutes);
+// app.use("/api/brand", brandRoutes);
+// app.use("/api/stock", stockRoutes);
+// app.use("/api/review", reviewRoutes);
 app.use('/api/attachment', attachmentRoutes);
-app.use('/api/category', categoryRoutes);
+// app.use("/api/category", categoryRoutes);
 
 app.use(notFound);
 

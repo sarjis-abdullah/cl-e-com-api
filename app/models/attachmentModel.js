@@ -1,17 +1,18 @@
 const mongoose = require('mongoose');
 
 const AttachmentSchema = new mongoose.Schema({
-  url: {
-    type: String,
-    required: true,
-  },
   mimeType: {
     type: String,
-    required: true,
-  },
-  attachmentType: {
-    type: String,
     required: false,
+  },
+  type: {
+    type: String,
+    required: true,
+    default: "general",
+  },
+  fileName: {
+    type: String,
+    required: true,
   },
   resourceId: {
     type: String,

@@ -1,29 +1,39 @@
 const Joi = require('joi');
 
 const createSchema = Joi.object({
-  name: Joi.string(),
-  description: Joi.string(),
+  type: Joi.string(),
+  createdBy: Joi.string(),
 });
 
-const updateSchema = Joi.object({
-  name: Joi.string(),
-  description: Joi.string(),
+const ALLOWED_TYPES = ['application/pdf', 'image/jpg', 'image/png']
+
+const fileSchema = Joi.object({
+  fileSource: Joi.object()
+    .required()
+    .keys({
+      mimetype: Joi.string()
+        .valid(...ALLOWED_TYPES)
+        .required(),
+      size: Joi.number()
+        .max(5 * 1024 * 1024)
+        .required(),
+    }),
 });
 
 module.exports = {
   validateCreateItem: (req, res, next) => {
-    const { error } = createSchema.validate(req.body);
-    if (error) {
+    return res.status(400).json({ error: res.file, body: req.body });
+    const response = fileSchema.validate({ fileSource: req.fileSource });
+    if (response.error) {
+      const error = response.error
       return res.status(400).json({ error: error.details[0].message });
     }
-    next();
-  },
 
-  validateUpdateItem: (req, res, next) => {
-    const { error } = updateSchema.validate(req.body);
+    const {error} = createSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
+    
     next();
   },
 };

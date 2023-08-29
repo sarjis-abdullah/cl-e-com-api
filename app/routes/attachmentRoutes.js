@@ -1,17 +1,31 @@
-const express = require('express');
-const controller = require('../controllers/attachmentController');
-const { validateCreateItem, validateUpdateItem } = require('../middlewares/attachmentMiddleware');
+const express = require("express");
+const multer = require("multer");
+const controller = require("../controllers/attachmentController");
+// const { validateCreateItem } = require("../middlewares/attachmentMiddleware");
+const upload = require("../middlewares/multerMiddleware");
 
 const router = express.Router();
 
-router.get('/', controller.getAll);
+router.get("/", controller.getAll);
 
-router.post('/', validateCreateItem, controller.create);
+router.post("/", async (req, res, next) => {
+  try {
+    await upload.single("fileSource")(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Multer Error", err });
+      } else if (err) {
+        res.status(500).json({ error: "Server Error", err });
+      } else {
+        next()
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Server Error", err });
+  }
+}, controller.create);
 
-router.get('/:id', controller.getById);
+router.get("/:id", controller.getById);
 
-router.patch('/:id', validateUpdateItem, controller.update);
-
-router.delete('/:id', controller.delete);
+router.delete("/:id", controller.delete);
 
 module.exports = router;
