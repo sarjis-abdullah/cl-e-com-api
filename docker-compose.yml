@@ -11,12 +11,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    command: bash -c "node app/index.js"
+    volumes:
+      - uploads:/public
     ports:
       - "3000:3000"
     depends_on:
       - mongodb
     environment:
       MONGO_URI: mongodb://mongodb:27017/myappdb
-    command: ["npm", "run", "dev"]
 volumes:
   mongodb_data:
+  uploads:

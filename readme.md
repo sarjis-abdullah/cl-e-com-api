@@ -13,6 +13,15 @@ Start the services
 docker-compose build
 docker-compose up -d
 ```
+to see inside docker what files are available
+
+```sh
+docker exec -it e-commerce-api-docker /bin/bash
+cd /app
+ls -l
+
+
+```
 
 View the logs
 
