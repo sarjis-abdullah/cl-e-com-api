@@ -1,6 +1,7 @@
 const Model = require('../models/stockModel');
 const dotenv     = require("dotenv");
 const {stockResourceCollection, stockResource} = require("../resources/stockResources");
+const Product = require('../models/productModel');
 
 dotenv.config();
 
@@ -26,6 +27,12 @@ exports.create = async (req, res) => {
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
+
+    const product = await Product.findById(data.productId)
+    product.stocks.push(savedItem)
+    await product.save();
+
+    
     const resource = stockResource(savedItem, req.query)
     res.status(201).json(resource);
   } catch (err) {

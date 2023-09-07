@@ -12,6 +12,7 @@ exports.getAll = async (req, res) => {
     if (req.query.populateBrand == 1) {
       query = query.populate('brandId');
     }
+    query = query.populate('stocks');
 
     const items = await query.exec();
     const { page = 1, limit = 10 } = req.query;
@@ -31,7 +32,6 @@ exports.getAll = async (req, res) => {
         currentPage: page,
     }
    
-    // res.json(items); return
     const resources = productResourceCollection(items, additionalData, req.query)
     res.json(resources);
   } catch (err) {
