@@ -1,12 +1,12 @@
 const Model = require('../models/productModel');
 const dotenv     = require("dotenv");
 const { productResource, productResourceCollection } = require('../resources/productResources');
+const { getMetaData } = require('../utils');
 
 dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-
     let query = Model.find({})
 
     if (req.query.populateBrand == 1) {
@@ -26,11 +26,8 @@ exports.getAll = async (req, res) => {
                               // .sort({ createdAt: -1 })
                               // .populate('stocks');
     
-    const count = await Model.countDocuments();
-    const additionalData = {
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-    }
+    const additionalData = await getMetaData(Model, req.query)
+    console.log(additionalData, 123);
    
     const resources = productResourceCollection(items, additionalData, req.query)
     res.json(resources);

@@ -2,6 +2,7 @@ const Model = require('../models/stockModel');
 const dotenv     = require("dotenv");
 const {stockResourceCollection, stockResource} = require("../resources/stockResources");
 const Product = require('../models/productModel');
+const { getMetaData } = require('../utils');
 
 dotenv.config();
 
@@ -15,7 +16,9 @@ exports.getAll = async (req, res) => {
 
     const items = await query.exec();
 
-    const resources = stockResourceCollection(items, {}, req.query)
+    const additionalData = await getMetaData(Model, req.query)
+
+    const resources = stockResourceCollection(items, additionalData, req.query)
     res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
