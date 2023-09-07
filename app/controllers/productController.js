@@ -1,35 +1,29 @@
 const Model = require('../models/productModel');
 const dotenv     = require("dotenv");
 const { productResource, productResourceCollection } = require('../resources/productResources');
-const { getMetaData } = require('../utils');
+const { getMetaData, setPagination } = require('../utils');
 
 dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    let query = Model.find({})
+    let modelQuery = Model.find({})
 
     if (req.query.populateBrand == 1) {
-      query = query.populate('brandId');
+      modelQuery = modelQuery.populate('brandId');
     }
-    query = query.populate('stocks');
+    if (req.query.populateStocks == 1) {
+      modelQuery = modelQuery.populate('stocks');
+    }
 
-    const items = await query.exec();
-    const { page = 1, limit = 10 } = req.query;
+    modelQuery = setPagination(modelQuery, req.query);
 
-    // let items = await Model.find({})
-                              // // We multiply the "limit" variables by one just to make sure we pass a number and not a string
-                              // .limit(limit * 1)
-                              // // I don't think i need to explain the math here
-                              // .skip((page - 1) * limit)
-                              // // We sort the data by the date of their creation in descending order (user 1 instead of -1 to get ascending order)
-                              // .sort({ createdAt: -1 })
-                              // .populate('stocks');
+    const items = await modelQuery.exec();
     
     const additionalData = await getMetaData(Model, req.query)
-    console.log(additionalData, 123);
    
     const resources = productResourceCollection(items, additionalData, req.query)
+
     res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
