@@ -5,7 +5,7 @@ dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    const items = await Model.find();
+    const items = await Model.find().populate('products').exec();
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema({
   stocks: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Stock", // Reference to the Stock model
+      ref: "Stock",
     },
   ],
   attachments: [

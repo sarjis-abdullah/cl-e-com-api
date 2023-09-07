@@ -1,6 +1,6 @@
 
 const {productResource} = require("./productResources")
-function stockResource(item) {
+function stockResource(item, query) {
   const {_id, createdAt,updatedAt, productId, status, quantity} = item
   const data = {
     id: _id,
@@ -10,14 +10,17 @@ function stockResource(item) {
     status,
   };
 
-  if (true) {
+  if (query.populateProduct == 1) {
     data.product = productResource(productId)
   }
   return data
 }
 
-function stockResourceCollection(stocks) {
-  return stocks.map(stock => stockResource(stock));
+function stockResourceCollection(stocks, additionalData = {}, query) {
+  return {
+    data: stocks.map(stock => stockResource(stock, query)),
+    meta: additionalData
+  }
 }
 
 module.exports = {

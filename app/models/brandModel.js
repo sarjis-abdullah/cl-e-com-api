@@ -9,6 +9,12 @@ const brandSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  products: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+  ],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

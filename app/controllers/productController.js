@@ -6,8 +6,33 @@ dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    const items = await Model.find().populate('stocks');
-    const resources = productResourceCollection(items)
+
+    let query = Model.find({})
+
+    if (req.query.populateBrand == 1) {
+      query = query.populate('brandId');
+    }
+
+    const items = await query.exec();
+    const { page = 1, limit = 10 } = req.query;
+
+    // let items = await Model.find({})
+                              // // We multiply the "limit" variables by one just to make sure we pass a number and not a string
+                              // .limit(limit * 1)
+                              // // I don't think i need to explain the math here
+                              // .skip((page - 1) * limit)
+                              // // We sort the data by the date of their creation in descending order (user 1 instead of -1 to get ascending order)
+                              // .sort({ createdAt: -1 })
+                              // .populate('stocks');
+    
+    const count = await Model.countDocuments();
+    const additionalData = {
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+    }
+   
+    // res.json(items); return
+    const resources = productResourceCollection(items, additionalData, req.query)
     res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -19,7 +44,7 @@ exports.create = async (req, res) => {
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
-    const resource = productResource(savedItem)
+    const resource = productResource(savedItem, req.query)
     res.status(201).json(resource);
   } catch (err) {
     res.status(400).json({ error: err.message });
