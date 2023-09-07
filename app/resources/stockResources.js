@@ -1,7 +1,7 @@
 
-const {stockResource} = require("./stockResources")
+const {productResource} = require("./productResources")
 function stockResource(item) {
-  const {_id, createdAt, productId, status, quantity} = item
+  const {_id, createdAt,updatedAt, productId, status, quantity} = item
   const data = {
     id: _id,
     createdAt,

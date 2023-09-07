@@ -6,11 +6,8 @@ dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    const items = await Model.find().populate({
-      path: 'productId',
-      select: '_id name description price brandId',
-    });
-    const resources = productResourceCollection(items)
+    const items = await Model.find().populate('productId');
+    const resources = stockResourceCollection(items)
     res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -22,7 +19,7 @@ exports.create = async (req, res) => {
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
-    const resource = productResource(savedItem)
+    const resource = stockResource(savedItem)
     res.status(201).json(resource);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -31,12 +28,12 @@ exports.create = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const item = await Model.findById(req.params.id);
+    const item = await Model.findById(req.params.id).populate('productId');
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    const resource = productResource(item)
+    const resource = stockResource(item)
     res.json(resource);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -52,7 +49,7 @@ exports.update = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    const resource = productResource(item)
+    const resource = stockResource(item)
     res.json(resource);
   } catch (err) {
     res.status(400).json({ error: err.message });
