@@ -1,6 +1,9 @@
 
 function brandResource(item) {
-  return item
+  const {_id, createdAt,updatedAt, name, description} = item
+  return {
+    id: _id, createdAt,updatedAt, name, description
+  }
 }
 
 function brandResourceCollection(stocks) {

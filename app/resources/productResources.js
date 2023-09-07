@@ -1,18 +1,18 @@
 const {brandResource} = require("./brandResources");
 const { stockResourceCollection } = require("./stockResources");
+
 function productResource(item, query = {}) {
-  const product = item
+  const {_id, createdAt,updatedAt, name, description} = item
   const data = {
-    id: product._id,
-    name: product.name,
-    description: product.description,
+    id: _id,
+    createdAt, updatedAt, name, description
   };
 
   if (query?.populateStocks == 1) {
     data.stocks = stockResourceCollection(item.stocks)
   }
   if (query?.populateBrand == 1) {
-    data.brand = brandResource(item.brandId)
+    data.brand = item.brandId ? brandResource(item.brandId) : null
   }
   return data
 }
