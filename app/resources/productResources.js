@@ -1,4 +1,5 @@
-const {brandResource} = require("./brandResources")
+const {brandResource} = require("./brandResources");
+const { stockResourceCollection } = require("./stockResources");
 function productResource(item, query = {}) {
   const product = item
   const data = {
@@ -8,7 +9,7 @@ function productResource(item, query = {}) {
   };
 
   if (query?.populateStocks == 1) {
-    data.stocks = item.stocks
+    data.stocks = stockResourceCollection(item.stocks)
   }
   if (query?.populateBrand == 1) {
     data.brand = brandResource(item.brandId)
@@ -16,11 +17,15 @@ function productResource(item, query = {}) {
   return data
 }
 
-function productResourceCollection(products, additionalData, query) {
-  return {
-    data: products.map(product => productResource(product, query)),
-    meta: additionalData
+function productResourceCollection(items, additionalData, query) {
+  const result = items.map(item => productResource(item, query))
+  if (Object.keys(additionalData).length) {
+    return {
+      data: result,
+      meta: additionalData
+    }
   }
+  return result
 }
 
 module.exports = {

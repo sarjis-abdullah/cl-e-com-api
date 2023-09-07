@@ -10,17 +10,21 @@ function stockResource(item, query) {
     status,
   };
 
-  if (query.populateProduct == 1) {
+  if (query?.populateProduct == 1) {
     data.product = productResource(productId)
   }
   return data
 }
 
-function stockResourceCollection(stocks, additionalData = {}, query) {
-  return {
-    data: stocks.map(stock => stockResource(stock, query)),
-    meta: additionalData
+function stockResourceCollection(items, additionalData = {}, query) {
+  const result = items.map(item => stockResource(item, query))
+  if (Object.keys(additionalData).length) {
+    return {
+      data: result,
+      meta: additionalData
+    }
   }
+  return result
 }
 
 module.exports = {
