@@ -20,7 +20,22 @@ function setPagination(dbQuery, query) {
   return dbQuery.skip(skip).limit(limit)
 }
 
+function needToInclude(query, key) {
+  if (!query) {
+    return false;
+  }
+  const includeParam = query.include;
+  if (!includeParam) {
+    return false;
+  }
+  
+  const includedKeys = includeParam.split(',');
+  return includedKeys.includes(key);
+}
+
+
 module.exports = {
   getMetaData,
-  setPagination
+  setPagination,
+  needToInclude
 }

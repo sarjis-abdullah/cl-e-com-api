@@ -1,4 +1,5 @@
 
+const { needToInclude } = require("../utils");
 const {productResource} = require("./productResources")
 function stockResource(item, query) {
   const {_id, createdAt,updatedAt, productId, status, quantity} = item
@@ -10,8 +11,11 @@ function stockResource(item, query) {
     status,
   };
 
-  if (query?.populateProduct == 1) {
+  if (needToInclude(query, 'stock.product')) {
     data.product = productResource(productId)
+  }
+  if (needToInclude(query, 'stock.brand')) {
+    data.brand = item.brandId ? brandResource(item.brandId) : null
   }
   return data
 }

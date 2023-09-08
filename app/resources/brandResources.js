@@ -6,8 +6,15 @@ function brandResource(item) {
   }
 }
 
-function brandResourceCollection(stocks) {
-  return stocks.map(stock => brandResource(stock));
+function brandResourceCollection(items, additionalData = {}, query) {
+  const result = items.map(item => brandResource(item, query))
+  if (Object.keys(additionalData).length) {
+    return {
+      data: result,
+      meta: additionalData
+    }
+  }
+  return result
 }
 
 module.exports = {

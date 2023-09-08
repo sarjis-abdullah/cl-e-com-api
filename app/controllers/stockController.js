@@ -2,7 +2,7 @@ const Model = require('../models/stockModel');
 const dotenv     = require("dotenv");
 const {stockResourceCollection, stockResource} = require("../resources/stockResources");
 const Product = require('../models/productModel');
-const { getMetaData } = require('../utils');
+const { getMetaData, needToInclude } = require('../utils');
 
 dotenv.config();
 
@@ -10,7 +10,7 @@ exports.getAll = async (req, res) => {
   try {
     let query = Model.find({})
 
-    if (req.query.populateProduct == 1) {
+    if (needToInclude(query, 'stock.brand')) {
       query = query.populate('productId');
     }
 
