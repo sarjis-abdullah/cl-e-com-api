@@ -9,6 +9,10 @@ function stockResource(item, query) {
     updatedAt,
     quantity,
     status,
+    sku,
+    sellingPrice,
+    purchasePrice,
+    expiredDate
   };
 
   if (needToInclude(query, 'stock.product')) {

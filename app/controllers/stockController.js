@@ -28,6 +28,7 @@ exports.getAll = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const data = {...req.body}
+    data.sku = data.sku ?? "sku-"(new Date()).getTime() + Date.now()
     const item = new Model(data);
     const savedItem = await item.save();
 

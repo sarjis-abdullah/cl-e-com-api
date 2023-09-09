@@ -1,17 +1,23 @@
 const Joi = require('joi');
 
 const createSchema = Joi.object({
-  productId: Joi.string(),
-  status: Joi.string(),
-  quantity: Joi.number(),
-  createdBy: Joi.string(),
+  productId: Joi.string().required(),
+  status: Joi.string().required(),
+  quantity: Joi.number().required(),
+  sku: Joi.string(),
+  purchasePrice: Joi.number().required(),
+  sellingPrice: Joi.number().required(),
+  expiredDate: Joi.date().required(),
 });
 
 const updateSchema = Joi.object({
-  productId: Joi.string(),
-  status: Joi.string(),
-  quantity: Joi.number(),
-  createdBy: Joi.string(),
+  productId: Joi.string().required(),
+  status: Joi.string().required(),
+  quantity: Joi.number().required(),
+  sku: Joi.string(),
+  purchasePrice: Joi.number().required(),
+  sellingPrice: Joi.number().required(),
+  expiredDate: Joi.date().required(),
 });
 
 module.exports = {

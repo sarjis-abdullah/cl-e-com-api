@@ -17,6 +17,18 @@ const stockSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  sku: {
+    type: String,
+    required: true,
+  },
+  purchasePrice: {
+    type: Number,
+    required: true,
+  },
+  sellingPrice: {
+    type: Number,
+    required: true,
+  },
   status: {
     type: String,
     enum: ['In Stock', 'Out of Stock', 'Low Stock'],
@@ -45,6 +57,10 @@ const stockSchema = new mongoose.Schema({
       },
       message: 'Invalid user ID',
     },
+  },
+  expiredDate: {
+    type: Date,
+    required: true,
   },
   createdAt: {
     type: Date,
