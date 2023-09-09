@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { STOCK_STATUS } = require('../enums');
 
 const stockSchema = new mongoose.Schema({
   productId: {
@@ -31,8 +32,8 @@ const stockSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['In Stock', 'Out of Stock', 'Low Stock'],
-    required: true,
+    enum: STOCK_STATUS,
+    required: "In-Stock",
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

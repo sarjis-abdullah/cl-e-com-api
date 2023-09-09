@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { ATTACHMENT_TYPES } = require('../enums');
 
 const AttachmentSchema = new mongoose.Schema({
   mimeType: {
@@ -7,7 +8,7 @@ const AttachmentSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    required: true,
+    enum: ATTACHMENT_TYPES,
     default: "general",
   },
   fileName: {

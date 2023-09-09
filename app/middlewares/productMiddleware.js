@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const PRODUCT_TYPES = require("")
 
 const createSchema = Joi.object({
   name: Joi.string().required(),

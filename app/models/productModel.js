@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { PRODUCT_TYPES } = require("../enums");
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -41,6 +42,11 @@ const productSchema = new mongoose.Schema({
       ref: "Review",
     },
   ],
+  type: {
+    type: String,
+    enum: PRODUCT_TYPES,
+    default: "Physical",
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
