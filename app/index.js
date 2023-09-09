@@ -35,7 +35,6 @@ app.use(auth);
 
 app.use('/api/attachment', express.static('uploads'));
 app.use("/api/task", taskRoutes);
-
 app.use("/api/product", productRoutes);
 app.use("/api/brand", brandRoutes);
 app.use("/api/stock", stockRoutes);

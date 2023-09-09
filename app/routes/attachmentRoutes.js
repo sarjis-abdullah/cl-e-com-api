@@ -3,12 +3,13 @@ const multer = require("multer");
 const controller = require("../controllers/attachmentController");
 // const { validateCreateItem } = require("../middlewares/attachmentMiddleware");
 const upload = require("../middlewares/multerMiddleware");
+const { setUserData } = require("../middlewares/userMiddleware");
 
 const router = express.Router();
 
 router.get("/", controller.getAll);
 
-router.post("/", async (req, res, next) => {
+router.post("/", setUserData, async (req, res, next) => {
   try {
     await upload.single("fileSource")(req, res, function (err) {
       if (err instanceof multer.MulterError) {

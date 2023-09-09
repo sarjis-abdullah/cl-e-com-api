@@ -11,21 +11,21 @@ const userRegisterSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
-const checkDuplicate = async(req, res, next) => {
+const checkDuplicate = async (req, res, next) => {
   try {
     const existingUser = await User.findOne({
       $or: [{ email: req.body.email }],
     });
 
     if (existingUser) {
-      return new Error("eueue")
+      return new Error("eueue");
     }
 
     next();
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -35,14 +35,14 @@ const loginSchema = Joi.object({
 // Middleware to check and verify JWT tokens
 const authenticateToken = (req, res, next) => {
   const authHeader = req.header("Authorization");
-  let token = ""
+  let token = "";
   if (authHeader) {
     if (authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
-    }else{
-      token = authHeader
+    } else {
+      token = authHeader;
     }
-  }else {
+  } else {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -56,37 +56,46 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
-
+const setUserData = (req, res, next) => {
+  const { method } = req;
+  if (method === "POST") {
+    req.body.createdBy = req.user.userId;
+  } else if (method === "PATCH" || method === "PUT") {
+    req.body.updatedBy = req.user.userId;
+  }
+  next();
+};
 
 module.exports = {
-  checkDuplicate: async(req, res, next) => {
+  checkDuplicate: async (req, res, next) => {
     try {
       const existingUser = await User.findOne({
         $or: [{ email: req.body.email }],
       });
-  
+
       if (existingUser) {
         return res.status(400).json({ error: "Email already exists!" });
       }
-  
+
       next();
     } catch (error) {
-      throw error
+      throw error;
     }
   },
   validateRegistration: (req, res, next) => {
-    const {error} = userRegisterSchema.validate(req.body);
+    const { error } = userRegisterSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
     next();
   },
   validateLogin: (req, res, next) => {
-    const {error} = loginSchema.validate(req.body);
+    const { error } = loginSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
     next();
   },
-  auth: authenticateToken
+  auth: authenticateToken,
+  setUserData,
 };

@@ -1,6 +1,6 @@
 const Model = require('../models/brandModel');
 const dotenv     = require("dotenv");
-const { brandResourceCollection } = require('../resources/brandResources');
+const { brandResourceCollection, brandResource } = require('../resources/brandResources');
 const { getMetaData, needToInclude, setPagination } = require('../utils');
 
 dotenv.config();
@@ -35,7 +35,7 @@ exports.create = async (req, res) => {
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
-    res.status(201).json(savedItem);
+    res.status(201).json(brandResource(savedItem));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -48,7 +48,7 @@ exports.getById = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    res.json(item);
+    res.json(savedItem(item));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -63,7 +63,7 @@ exports.update = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json(item);
+    res.json(savedItem(item));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
