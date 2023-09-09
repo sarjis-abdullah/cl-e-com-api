@@ -2,7 +2,7 @@ const Model = require('../models/stockModel');
 const dotenv     = require("dotenv");
 const {stockResourceCollection, stockResource} = require("../resources/stockResources");
 const Product = require('../models/productModel');
-const { getMetaData, needToInclude } = require('../utils');
+const { getMetaData, needToInclude, sortAndPaginate } = require('../utils');
 
 dotenv.config();
 
@@ -20,6 +20,8 @@ exports.getAll = async (req, res) => {
     if (needToInclude(req.query, 'stock.updatedBy')) {
       modelQuery = modelQuery.populate('updatedBy');
     }
+
+    modelQuery = sortAndPaginate(modelQuery, req.query);
 
     const items = await modelQuery.exec();
 

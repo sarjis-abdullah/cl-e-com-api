@@ -14,9 +14,19 @@ async function getMetaData(Model, query) {
     total: count,
   };
 }
-function setPagination(dbQuery, query) {
+function sortAndPaginate(dbQuery, query) {
   const { page, limit } = getPageLimit(query);
   const skip = (page - 1) * limit;
+
+  const sortBy = query?.sortBy == "updatedAt" ? "updatedAt" : "createdAt"
+  if (sortBy && query.sortOrder) {
+    const sortDirection = query.sortOrder === 'desc' ? -1 : 1;    
+    const sort = {};
+    sort[sortBy] = sortDirection;
+  
+    dbQuery = dbQuery.sort(sort);
+  }
+
   return dbQuery.skip(skip).limit(limit)
 }
 
@@ -33,9 +43,8 @@ function needToInclude(query, key) {
   return includedKeys.includes(key);
 }
 
-
 module.exports = {
   getMetaData,
-  setPagination,
+  sortAndPaginate,
   needToInclude
 }

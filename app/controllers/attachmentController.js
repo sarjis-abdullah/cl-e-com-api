@@ -1,12 +1,26 @@
 const Model = require('../models/attachmentModel');
 const dotenv     = require("dotenv");
+const { needToInclude, sortAndPaginate, getMetaData } = require('../utils');
+const { attachmentResourceCollection, attachmentResource } = require('../resources/attachmentResources');
 
 dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    const items = await Model.find();
-    res.json(items);
+    let modelQuery = Model.find({})
+
+    if (needToInclude(req.query, 'attachment.createdBy')) {
+      modelQuery = modelQuery.populate('createdBy');
+    }
+
+    modelQuery = sortAndPaginate(modelQuery, req.query);
+
+    const items = await modelQuery.exec();
+    
+    const additionalData = await getMetaData(Model, req.query)
+   
+    const resources = attachmentResourceCollection(items, additionalData, req.query)
+    res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -17,7 +31,7 @@ exports.create = async (req, res) => {
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
-    res.status(201).json(savedItem);
+    res.status(201).json(attachmentResource(savedItem));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -30,24 +44,9 @@ exports.getById = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    res.json(item);
+    res.json(attachmentResource(item));
   } catch (err) {
     res.status(500).json({ error: err.message });
-  }
-};
-
-exports.update = async (req, res) => {
-  try {
-    const item = await Model.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
-    }
-    res.json(item);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
   }
 };
 

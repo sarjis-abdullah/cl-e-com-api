@@ -4,10 +4,12 @@ const { userResource } = require("./userResources")
 function attachmentResource(item, query = {}) {
   const {_id, createdAt,mimeType,type,fileName,resourceId } = item
   const data = {
-    id: _id, createdAt,mimeType,type,fileName,resourceId
+    id: _id, createdAt, mimeType, type, 
+    src: fileName, 
+    resourceId
   }
 
-  if (needToInclude(query, 'brand.createdBy')) {
+  if (needToInclude(query, 'attachment.createdBy')) {
     data.createdBy = item.createdBy ? userResource(item.createdBy) : null
   }
 

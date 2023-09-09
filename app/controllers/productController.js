@@ -1,7 +1,7 @@
 const Model = require('../models/productModel');
 const dotenv     = require("dotenv");
 const { productResource, productResourceCollection } = require('../resources/productResources');
-const { getMetaData, setPagination, needToInclude } = require('../utils');
+const { getMetaData, sortAndPaginate, needToInclude } = require('../utils');
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ exports.getAll = async (req, res) => {
       modelQuery = modelQuery.populate('updatedBy');
     }
 
-    modelQuery = setPagination(modelQuery, req.query);
+    modelQuery = sortAndPaginate(modelQuery, req.query);   
 
     const items = await modelQuery.exec();
     
