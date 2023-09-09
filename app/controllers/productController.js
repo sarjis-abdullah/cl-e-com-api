@@ -2,6 +2,7 @@ const Model = require('../models/productModel');
 const dotenv     = require("dotenv");
 const { productResource, productResourceCollection } = require('../resources/productResources');
 const { getMetaData, sortAndPaginate, needToInclude } = require('../utils');
+const Category = require('../models/categoryModel');
 
 dotenv.config();
 
@@ -22,6 +23,9 @@ exports.getAll = async (req, res) => {
     if (needToInclude(req.query, 'product.updatedBy')) {
       modelQuery = modelQuery.populate('updatedBy');
     }
+    if (needToInclude(req.query, 'product.categories')) {
+      modelQuery = modelQuery.populate('categories');
+    }
 
     modelQuery = sortAndPaginate(modelQuery, req.query);   
 
@@ -40,9 +44,13 @@ exports.getAll = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const data = {...req.body}
-    const item = new Model(data);
-    const savedItem = await item.save();
-    const resource = productResource(savedItem, req.query)
+    const item = new Model(data)
+
+    // Todo
+    // const ids = req.body.categories
+    // const categories = await Category.find({ '_id': { $in: ids } });
+    const newProduct = await item.save();
+    const resource = productResource(newProduct, req.query)
     res.status(201).json(resource);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -51,11 +59,11 @@ exports.create = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const item = await Model.findById(req.params.id);
+    const item = await Model.findById(req.params.id).populate("categories");
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    const resource = productResource(item)
+    const resource = productResource(item, req.query)
     res.json(resource);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -1,17 +1,24 @@
 const Joi = require('joi');
+const PRODUCT_TYPES = require("")
 
 const createSchema = Joi.object({
-  name: Joi.string(),
-  description: Joi.string(),
-  price: Joi.string(),
-  brandId: Joi.string(),
+  name: Joi.string().required(),
+  description: Joi.string().required(),
+  price: Joi.string().required(),
+  brandId: Joi.string().required(),
+  categories: Joi.array().required(),
+  attachments: Joi.array().required(),
+  type: Joi.string().valid('Physical', 'Online'),
 });
 
 const updateSchema = Joi.object({
-  name: Joi.string(),
-  description: Joi.string(),
-  price: Joi.string(),
-  brandId: Joi.string(),
+  name: Joi.string().required(),
+  description: Joi.string().required(),
+  price: Joi.string().required(),
+  brandId: Joi.string().required(),
+  categories: Joi.array().required(),
+  attachments: Joi.array().required(),
+  type: Joi.string().valid('Physical', 'Online'),
 });
 
 module.exports = {
