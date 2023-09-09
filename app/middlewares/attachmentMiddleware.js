@@ -2,7 +2,6 @@ const Joi = require('joi');
 
 const createSchema = Joi.object({
   type: Joi.string(),
-  createdBy: Joi.string(),
 });
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpg', 'image/png']
@@ -22,7 +21,7 @@ const fileSchema = Joi.object({
 
 module.exports = {
   validateCreateItem: (req, res, next) => {
-    return res.status(400).json({ error: res.file, body: req.body });
+    // return res.status(400).json({ error: res.file, body: req.body });
     const response = fileSchema.validate({ fileSource: req.fileSource });
     if (response.error) {
       const error = response.error
