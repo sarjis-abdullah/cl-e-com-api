@@ -13,6 +13,7 @@ const categoryRoutes = require("./routes/categoryRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const attachmentRoutes = require('./routes/attachmentRoutes');
 const { notFound, defaultError } = require("./middlewares/errorMiddleware");
+const { auth } = require("./middlewares/userMiddleware");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -26,9 +27,15 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 app.use(express.static('public'))
 
+app.use("/api/user", userRoutes);
+//public routes will be here
+
+app.use(auth);
+//auth routes will be here
+
 app.use('/api/attachment', express.static('uploads'));
 app.use("/api/task", taskRoutes);
-app.use("/api/user", userRoutes);
+
 app.use("/api/product", productRoutes);
 app.use("/api/brand", brandRoutes);
 app.use("/api/stock", stockRoutes);

@@ -1,5 +1,9 @@
 const Joi = require("joi");
+const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const userRegisterSchema = Joi.object({
   name: Joi.string().min(3).max(20).required(),
@@ -27,6 +31,32 @@ const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
+
+// Middleware to check and verify JWT tokens
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.header("Authorization");
+  let token = ""
+  if (authHeader) {
+    if (authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    }else{
+      token = authHeader
+    }
+  }else {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = decoded;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
+
 
 module.exports = {
   checkDuplicate: async(req, res, next) => {
@@ -58,4 +88,5 @@ module.exports = {
     }
     next();
   },
+  auth: authenticateToken
 };
