@@ -8,13 +8,20 @@ dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    let query = Model.find({})
+    let modelQuery = Model.find({})
 
-    if (needToInclude(query, 'stock.brand')) {
-      query = query.populate('productId');
+    if (needToInclude(req.query, 'stock.brand')) {
+      modelQuery = modelQuery.populate('productId');
     }
 
-    const items = await query.exec();
+    if (needToInclude(req.query, 'stock.createdBy')) {
+      modelQuery = modelQuery.populate('createdBy');
+    }
+    if (needToInclude(req.query, 'stock.updatedBy')) {
+      modelQuery = modelQuery.populate('updatedBy');
+    }
+
+    const items = await modelQuery.exec();
 
     const additionalData = await getMetaData(Model, req.query)
 

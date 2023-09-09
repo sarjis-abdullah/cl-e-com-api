@@ -22,23 +22,23 @@ const productSchema = new mongoose.Schema({
   attachments: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Attachment", // Reference to the Attachment model
+      ref: "Attachment",
     },
   ],
   categories: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category", // Reference to the Category model
+      ref: "Category",
     },
   ],
   brandId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Brand", // Reference to the Brand model
+    ref: "Brand",
   },
   reviews: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Review", // Reference to the Review model
+      ref: "Review",
     },
   ],
   createdBy: {

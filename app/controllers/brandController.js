@@ -1,12 +1,30 @@
 const Model = require('../models/brandModel');
 const dotenv     = require("dotenv");
+const { brandResourceCollection } = require('../resources/brandResources');
+const { getMetaData, needToInclude, setPagination } = require('../utils');
 
 dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    const items = await Model.find().populate('products').exec();
-    res.json(items);
+    let modelQuery = Model.find({})
+
+    if (needToInclude(req.query, 'stock.createdBy')) {
+      modelQuery = modelQuery.populate('createdBy');
+    }
+    if (needToInclude(req.query, 'stock.updatedBy')) {
+      modelQuery = modelQuery.populate('updatedBy');
+    }
+
+    modelQuery = setPagination(modelQuery, req.query);
+
+    const items = await modelQuery.exec();
+    
+    const additionalData = await getMetaData(Model, req.query)
+   
+    const resources = brandResourceCollection(items, additionalData, req.query)
+
+    res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

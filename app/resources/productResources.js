@@ -1,6 +1,7 @@
 const { needToInclude } = require("../utils");
 const {brandResource} = require("./brandResources");
 const { stockResourceCollection } = require("./stockResources");
+const { userResource } = require("./userResources");
 
 function productResource(item, query = {}) {
   const {_id, createdAt,updatedAt, name, description} = item
@@ -14,6 +15,12 @@ function productResource(item, query = {}) {
   }
   if (needToInclude(query, 'product.brand')) {
     data.brand = item.brandId ? brandResource(item.brandId) : null
+  }
+  if (needToInclude(query, 'product.createdBy')) {
+    data.createdBy = item.createdBy ? userResource(item.createdBy) : null
+  }
+  if (needToInclude(query, 'product.updatedBy')) {
+    data.updatedBy = item.updatedBy ? userResource(item.updatedBy) : null
   }
   return data
 }

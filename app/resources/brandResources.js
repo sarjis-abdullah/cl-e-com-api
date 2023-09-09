@@ -1,9 +1,20 @@
+const { needToInclude } = require("../utils")
+const { userResource } = require("./userResources")
 
-function brandResource(item) {
+function brandResource(item, query = {}) {
   const {_id, createdAt,updatedAt, name, description} = item
-  return {
+  const data = {
     id: _id, createdAt,updatedAt, name, description
   }
+
+  if (needToInclude(query, 'brand.createdBy')) {
+    data.createdBy = item.createdBy ? userResource(item.createdBy) : null
+  }
+  if (needToInclude(query, 'brand.updatedBy')) {
+    data.updatedBy = item.updatedBy ? userResource(item.updatedBy) : null
+  }
+
+  return data
 }
 
 function brandResourceCollection(items, additionalData = {}, query) {

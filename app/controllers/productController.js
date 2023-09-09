@@ -16,6 +16,13 @@ exports.getAll = async (req, res) => {
       modelQuery = modelQuery.populate('stocks');
     }
 
+    if (needToInclude(req.query, 'product.createdBy')) {
+      modelQuery = modelQuery.populate('createdBy');
+    }
+    if (needToInclude(req.query, 'product.updatedBy')) {
+      modelQuery = modelQuery.populate('updatedBy');
+    }
+
     modelQuery = setPagination(modelQuery, req.query);
 
     const items = await modelQuery.exec();
