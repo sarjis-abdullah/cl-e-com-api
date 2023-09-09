@@ -26,6 +26,9 @@ exports.getAll = async (req, res) => {
     if (needToInclude(req.query, 'product.categories')) {
       modelQuery = modelQuery.populate('categories');
     }
+    if (needToInclude(req.query, 'product.attachments')) {
+      modelQuery = modelQuery.populate('attachments');
+    }
 
     modelQuery = sortAndPaginate(modelQuery, req.query);   
 

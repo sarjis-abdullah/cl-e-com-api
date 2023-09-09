@@ -1,14 +1,15 @@
 const { needToInclude } = require("../utils");
+const { attachmentResourceCollection } = require("./attachmentResources");
 const {brandResource} = require("./brandResources");
 const { categoryResourceCollection } = require("./categoryResources");
 const { stockResourceCollection } = require("./stockResources");
 const { userResource } = require("./userResources");
 
 function productResource(item, query = {}) {
-  const {_id, createdAt,updatedAt, name, description} = item
+  const {_id, createdAt,updatedAt, name, description, type} = item
   const data = {
     id: _id,
-    createdAt, updatedAt, name, description
+    createdAt, updatedAt, name, description, type
   };
 
   if (needToInclude(query, 'product.stocks')) {
@@ -25,6 +26,9 @@ function productResource(item, query = {}) {
   }
   if (needToInclude(query, 'product.categories')) {
     data.categories = categoryResourceCollection(item.categories)
+  }
+  if (needToInclude(query, 'product.attachments')) {
+    data.attachments = attachmentResourceCollection(item.attachments)
   }
   return data
 }
