@@ -15,37 +15,39 @@ const Category = require("../models/categoryModel");
 
 dotenv.config();
 
+function filterProductByStocks(query) {
+  const pipeline = [];
+  const filterWithStocks =
+    query.filterWithStocks == "withStocks" ? "withStocks" : "withoutStocks";
+
+  if (filterWithStocks === "withStocks") {
+    pipeline.push({
+      $lookup: {
+        from: "stocks",
+        localField: "_id",
+        foreignField: "productId",
+        as: "stocks",
+      },
+    });
+    pipeline.push({ $match: { "stocks.0": { $exists: true } } });
+  } else if (filterWithStocks === "withoutStocks") {
+    pipeline.push({
+      $lookup: {
+        from: "stocks",
+        localField: "_id",
+        foreignField: "productId",
+        as: "stocks",
+      },
+    });
+    pipeline.push({ $match: { "stocks.0": { $exists: false } } });
+  }
+  return pipeline;
+}
+
 exports.getAll = async (req, res) => {
   try {
-    const pipeline = [];
-    const filterWithStocks =
-      req.query.filterWithStocks == "withStocks"
-        ? "withStocks"
-        : "withoutStocks";
-
-    // if (filterWithStocks === "withStocks") {
-    //   pipeline.push({
-    //     $lookup: {
-    //       from: "stocks",
-    //       localField: "_id",
-    //       foreignField: "productId",
-    //       as: "stocks",
-    //     },
-    //   });
-    //   pipeline.push({ $match: { "stocks.0": { $exists: true } } });
-    // } else if (filterWithStocks === "withoutStocks") {
-    //   pipeline.push({
-    //     $lookup: {
-    //       from: "stocks",
-    //       localField: "_id",
-    //       foreignField: "productId",
-    //       as: "stocks",
-    //     },
-    //   });
-    //   pipeline.push({ $match: { "stocks.0": { $exists: false } } });
-    // }
-
-    // Add more lookup stages for other related data (e.g., attachments, categories, createdBy, brand)
+    const fs = req.query?.filterWithStocks
+    const pipeline = fs ? filterProductByStocks(req.query) : [];
 
     if (needToInclude(req.query, "product.brand")) {
       pipeline.push({
@@ -58,7 +60,6 @@ exports.getAll = async (req, res) => {
       });
     }
     if (needToInclude(req.query, "product.stocks")) {
-      console.log(393939);
       pipeline.push({
         $lookup: {
           from: "stocks",
@@ -92,32 +93,26 @@ exports.getAll = async (req, res) => {
     if (needToInclude(req.query, "product.categories")) {
       pipeline.push({
         $lookup: {
-          from: "categories",
-          localField: "_id",
-          foreignField: "products",
-          as: "categories",
+          from: "categories", // The name of the Category collection
+          localField: "categories", // The field in Product that links to Category
+          foreignField: "_id", // The field in Category to match with
+          as: "categories", // The name of the new field to store the category data
         },
       });
-      // pipeline.push({
-      //   $unwind: "$categories",  // Unwind the "categories" array to destructure it
-      // });
-      
-      
     }
     if (needToInclude(req.query, "product.attachments")) {
       pipeline.push({
         $lookup: {
           from: "attachments",
-          localField: "_id",
-          foreignField: "productId",
+          localField: "attachments",
+          foreignField: "_id",
           as: "attachments",
         },
       });
     }
 
     const { sorting, container } = sortAndPagination(req.query);
-    pipeline.push(sorting);
-    pipeline.push(container);
+    pipeline.push(sorting, container);
 
     const [result] = await Model.aggregate(pipeline);
 
@@ -129,7 +124,7 @@ exports.getAll = async (req, res) => {
       req.query
     );
 
-    res.json(result);
+    res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -141,9 +136,10 @@ exports.create = async (req, res) => {
     const item = new Model(data);
 
     // Todo
-    // const ids = req.body.categories
-    // const categories = await Category.find({ '_id': { $in: ids } });
+    const ids = req.body.categories;
+    const categories = await Category.find({ _id: { $in: ids } });
     const newProduct = await item.save();
+    newProduct.categories = categories;
     const resource = productResource(newProduct, req.query);
     res.status(201).json(resource);
   } catch (err) {
