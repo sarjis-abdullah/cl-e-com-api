@@ -1,5 +1,6 @@
 const Model = require("../models/productModel");
 const dotenv = require("dotenv");
+const mongoose = require('mongoose');
 const {
   productResource,
   productResourceCollection,
@@ -48,6 +49,29 @@ exports.getAll = async (req, res) => {
   try {
     const fs = req.query?.filterWithStocks
     const pipeline = fs ? filterProductByStocks(req.query) : [];
+
+    if (req.query?.createdBy) {
+      const q = {
+        $match: {
+          createdBy: new mongoose.Types.ObjectId(req.query.createdBy),
+        },
+      }
+      pipeline.push(q)
+    }
+
+    if (req.query.searchQuery) {
+      const searchQuery = req.query.searchQuery
+      const sq = {
+        $match: {
+          $or: [
+            { name: { $regex: searchQuery, $options: 'i' } },
+            { 'stocks.sku': { $regex: searchQuery, $options: 'i' } }, 
+            { createdBy: { $in: [searchQuery] } },
+          ],
+        },
+      }
+      pipeline.push(sq)
+    }
 
     if (needToInclude(req.query, "product.brand")) {
       pipeline.push({
