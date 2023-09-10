@@ -1,42 +1,110 @@
-const Model = require('../models/productModel');
-const dotenv     = require("dotenv");
-const { productResource, productResourceCollection } = require('../resources/productResources');
-const { getMetaData, sortAndPaginate, needToInclude } = require('../utils');
-const Category = require('../models/categoryModel');
+const Model = require("../models/productModel");
+const dotenv = require("dotenv");
+const {
+  productResource,
+  productResourceCollection,
+} = require("../resources/productResources");
+const { getMetaData, sortAndPaginate, needToInclude } = require("../utils");
+const Category = require("../models/categoryModel");
 
 dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    let modelQuery = Model.find({})
+    const pipeline = [];
+    const filterWithStocks = req.query.filterWithStocks == "withStocks" ? "withStocks" : "withoutStocks";
 
-    if (needToInclude(req.query, 'product.brand')) {
-      modelQuery = modelQuery.populate('brandId');
-    }
-    if (needToInclude(req.query, 'product.stocks')) {
-      modelQuery = modelQuery.populate('stocks');
+    // Match products based on whether they have stocks or not
+    if (filterWithStocks === "withStocks") {
+      pipeline.push({
+        $lookup: {
+          from: "stocks", // Name of the Stock collection
+          localField: "_id",
+          foreignField: "productId",
+          as: "stocks",
+        },
+      });
+      pipeline.push({ $match: { "stocks.0": { $exists: true } } });
+    } else if (filterWithStocks === "withoutStocks") {
+      pipeline.push({
+        $lookup: {
+          from: "stocks", // Name of the Stock collection
+          localField: "_id",
+          foreignField: "productId",
+          as: "stocks",
+        },
+      });
+      pipeline.push({ $match: { "stocks.0": { $exists: false } } });
     }
 
-    if (needToInclude(req.query, 'product.createdBy')) {
-      modelQuery = modelQuery.populate('createdBy');
-    }
-    if (needToInclude(req.query, 'product.updatedBy')) {
-      modelQuery = modelQuery.populate('updatedBy');
-    }
-    if (needToInclude(req.query, 'product.categories')) {
-      modelQuery = modelQuery.populate('categories');
-    }
-    if (needToInclude(req.query, 'product.attachments')) {
-      modelQuery = modelQuery.populate('attachments');
+    function getPageLimit(query) {
+      const page = parseInt(query.page) || 1;
+      const limit = parseInt(query.limit) || 10;
+      return {
+        page,
+        limit,
+      };
     }
 
-    modelQuery = sortAndPaginate(modelQuery, req.query);   
+    // Add more lookup stages for other related data (e.g., attachments, categories, createdBy, brand)
+    pipeline.push({
+      $lookup: {
+        from: "attachments", // Name of the Attachment collection
+        localField: "attachments",
+        foreignField: "_id",
+        as: "attachments",
+      },
+    });
+    // Add more lookup stages as needed for other relations
 
-    const items = await modelQuery.exec();
+    // Sort and paginate
+    function sortAndPagination(query) {
+      const { page, limit } = getPageLimit(query);
+      const sortBy = query?.sortBy == "updatedAt" ? "updatedAt" : "createdAt";
+      const sortDirection = query?.sortDirection === "desc" ? -1 : 1;
+      const sorting = { $sort: { [sortBy]: sortDirection } }
+
+      const container = {
+        $facet: {
+          items: [
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+          ],
+          totalCount: [
+            { $count: 'total' },
+          ],
+        },
+      }
+      return {
+        sorting,
+        container
+      }
+    }
+
+    const {sorting, container} = sortAndPagination(req.query)
+    pipeline.push(sorting)
+    pipeline.push(container)
     
-    const additionalData = await getMetaData(Model, req.query)
-   
-    const resources = productResourceCollection(items, additionalData, req.query)
+
+    const [result] = await Model.aggregate(pipeline);
+
+    
+    function getMetaInfo(result, query) {
+      const { page, limit } = getPageLimit(query);
+      const total = result.totalCount[0] ? result.totalCount[0].total : 0;
+      return {
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        total,
+      }
+    }
+    const additionalData = getMetaInfo(result, req.query)
+
+    const resources = productResourceCollection(
+      result.items,
+      additionalData,
+      req.query
+    );
 
     res.json(resources);
   } catch (err) {
@@ -46,14 +114,14 @@ exports.getAll = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const data = {...req.body}
-    const item = new Model(data)
+    const data = { ...req.body };
+    const item = new Model(data);
 
     // Todo
     // const ids = req.body.categories
     // const categories = await Category.find({ '_id': { $in: ids } });
     const newProduct = await item.save();
-    const resource = productResource(newProduct, req.query)
+    const resource = productResource(newProduct, req.query);
     res.status(201).json(resource);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -64,9 +132,9 @@ exports.getById = async (req, res) => {
   try {
     const item = await Model.findById(req.params.id).populate("categories");
     if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
+      return res.status(404).json({ message: "Item not found" });
     }
-    const resource = productResource(item, req.query)
+    const resource = productResource(item, req.query);
     res.json(resource);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -80,9 +148,9 @@ exports.update = async (req, res) => {
       runValidators: true,
     });
     if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
+      return res.status(404).json({ message: "Item not found" });
     }
-    const resource = productResource(item)
+    const resource = productResource(item);
     res.json(resource);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -93,9 +161,9 @@ exports.delete = async (req, res) => {
   try {
     const item = await Model.findByIdAndDelete(req.params.id);
     if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
+      return res.status(404).json({ message: "Item not found" });
     }
-    res.json({ message: 'Item deleted successfully' });
+    res.json({ message: "Item deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
