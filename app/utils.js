@@ -43,8 +43,42 @@ function needToInclude(query, key) {
   return includedKeys.includes(key);
 }
 
+function sortAndPagination(query) {
+  const { page, limit } = getPageLimit(query);
+  const sortBy = query?.sortBy == "updatedAt" ? "updatedAt" : "createdAt";
+  const sortDirection = query?.sortDirection === "desc" ? -1 : 1;
+  const sorting = { $sort: { [sortBy]: sortDirection } }
+
+  const container = {
+    $facet: {
+      items: [
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+      ],
+      totalCount: [
+        { $count: 'total' },
+      ],
+    },
+  }
+  return {
+    sorting,
+    container
+  }
+}
+function getMetaInfo(result, query) {
+  const { page, limit } = getPageLimit(query);
+  const total = result.totalCount[0] ? result.totalCount[0].total : 0;
+  return {
+    totalPages: Math.ceil(total / limit),
+    currentPage: page,
+    total,
+  }
+}
+
 module.exports = {
   getMetaData,
   sortAndPaginate,
-  needToInclude
+  needToInclude,
+  sortAndPagination,
+  getMetaInfo
 }

@@ -16,7 +16,7 @@ function productResource(item, query = {}) {
     data.stocks = stockResourceCollection(item.stocks)
   }
   if (needToInclude(query, 'product.brand')) {
-    data.brand = item.brandId ? brandResource(item.brandId) : null
+    data.brand = item.brand ? brandResource(item.brand) : null
   }
   if (needToInclude(query, 'product.createdBy')) {
     data.createdBy = item.createdBy ? userResource(item.createdBy) : null

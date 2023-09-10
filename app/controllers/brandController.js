@@ -48,7 +48,7 @@ exports.getById = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    res.json(savedItem(item));
+    res.json(brandResource(item));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -63,7 +63,7 @@ exports.update = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json(savedItem(item));
+    res.json(brandResource(item));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

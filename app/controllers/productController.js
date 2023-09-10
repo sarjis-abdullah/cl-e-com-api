@@ -4,7 +4,13 @@ const {
   productResource,
   productResourceCollection,
 } = require("../resources/productResources");
-const { getMetaData, sortAndPaginate, needToInclude } = require("../utils");
+const {
+  getMetaData,
+  sortAndPaginate,
+  needToInclude,
+  sortAndPagination,
+  getMetaInfo,
+} = require("../utils");
 const Category = require("../models/categoryModel");
 
 dotenv.config();
@@ -12,93 +18,110 @@ dotenv.config();
 exports.getAll = async (req, res) => {
   try {
     const pipeline = [];
-    const filterWithStocks = req.query.filterWithStocks == "withStocks" ? "withStocks" : "withoutStocks";
+    const filterWithStocks =
+      req.query.filterWithStocks == "withStocks"
+        ? "withStocks"
+        : "withoutStocks";
 
-    // Match products based on whether they have stocks or not
-    if (filterWithStocks === "withStocks") {
-      pipeline.push({
-        $lookup: {
-          from: "stocks", // Name of the Stock collection
-          localField: "_id",
-          foreignField: "productId",
-          as: "stocks",
-        },
-      });
-      pipeline.push({ $match: { "stocks.0": { $exists: true } } });
-    } else if (filterWithStocks === "withoutStocks") {
-      pipeline.push({
-        $lookup: {
-          from: "stocks", // Name of the Stock collection
-          localField: "_id",
-          foreignField: "productId",
-          as: "stocks",
-        },
-      });
-      pipeline.push({ $match: { "stocks.0": { $exists: false } } });
-    }
-
-    function getPageLimit(query) {
-      const page = parseInt(query.page) || 1;
-      const limit = parseInt(query.limit) || 10;
-      return {
-        page,
-        limit,
-      };
-    }
+    // if (filterWithStocks === "withStocks") {
+    //   pipeline.push({
+    //     $lookup: {
+    //       from: "stocks",
+    //       localField: "_id",
+    //       foreignField: "productId",
+    //       as: "stocks",
+    //     },
+    //   });
+    //   pipeline.push({ $match: { "stocks.0": { $exists: true } } });
+    // } else if (filterWithStocks === "withoutStocks") {
+    //   pipeline.push({
+    //     $lookup: {
+    //       from: "stocks",
+    //       localField: "_id",
+    //       foreignField: "productId",
+    //       as: "stocks",
+    //     },
+    //   });
+    //   pipeline.push({ $match: { "stocks.0": { $exists: false } } });
+    // }
 
     // Add more lookup stages for other related data (e.g., attachments, categories, createdBy, brand)
-    pipeline.push({
-      $lookup: {
-        from: "attachments", // Name of the Attachment collection
-        localField: "attachments",
-        foreignField: "_id",
-        as: "attachments",
-      },
-    });
-    // Add more lookup stages as needed for other relations
 
-    // Sort and paginate
-    function sortAndPagination(query) {
-      const { page, limit } = getPageLimit(query);
-      const sortBy = query?.sortBy == "updatedAt" ? "updatedAt" : "createdAt";
-      const sortDirection = query?.sortDirection === "desc" ? -1 : 1;
-      const sorting = { $sort: { [sortBy]: sortDirection } }
-
-      const container = {
-        $facet: {
-          items: [
-            { $skip: (page - 1) * limit },
-            { $limit: limit },
-          ],
-          totalCount: [
-            { $count: 'total' },
-          ],
+    if (needToInclude(req.query, "product.brand")) {
+      pipeline.push({
+        $lookup: {
+          from: "brands",
+          localField: "brandId",
+          foreignField: "_id",
+          as: "brand",
         },
-      }
-      return {
-        sorting,
-        container
-      }
+      });
+    }
+    if (needToInclude(req.query, "product.stocks")) {
+      console.log(393939);
+      pipeline.push({
+        $lookup: {
+          from: "stocks",
+          localField: "_id",
+          foreignField: "productId",
+          as: "stocks",
+        },
+      });
     }
 
-    const {sorting, container} = sortAndPagination(req.query)
-    pipeline.push(sorting)
-    pipeline.push(container)
-    
+    if (needToInclude(req.query, "product.createdBy")) {
+      pipeline.push({
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      });
+    }
+    if (needToInclude(req.query, "product.updatedBy")) {
+      pipeline.push({
+        $lookup: {
+          from: "users",
+          localField: "updatedBy",
+          foreignField: "_id",
+          as: "updatedBy",
+        },
+      });
+    }
+    if (needToInclude(req.query, "product.categories")) {
+      pipeline.push({
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "products",
+          as: "categories",
+        },
+      });
+      // pipeline.push({
+      //   $unwind: "$categories",  // Unwind the "categories" array to destructure it
+      // });
+      
+      
+    }
+    if (needToInclude(req.query, "product.attachments")) {
+      pipeline.push({
+        $lookup: {
+          from: "attachments",
+          localField: "_id",
+          foreignField: "productId",
+          as: "attachments",
+        },
+      });
+    }
+
+    const { sorting, container } = sortAndPagination(req.query);
+    pipeline.push(sorting);
+    pipeline.push(container);
 
     const [result] = await Model.aggregate(pipeline);
 
-    
-    function getMetaInfo(result, query) {
-      const { page, limit } = getPageLimit(query);
-      const total = result.totalCount[0] ? result.totalCount[0].total : 0;
-      return {
-        totalPages: Math.ceil(total / limit),
-        currentPage: page,
-        total,
-      }
-    }
-    const additionalData = getMetaInfo(result, req.query)
+    const additionalData = getMetaInfo(result, req.query);
 
     const resources = productResourceCollection(
       result.items,
@@ -106,7 +129,7 @@ exports.getAll = async (req, res) => {
       req.query
     );
 
-    res.json(resources);
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
