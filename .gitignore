@@ -19,3 +19,4 @@ benchmarks/graphs
 dist/
 .env
 app/uploads
+.env

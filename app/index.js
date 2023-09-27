@@ -10,6 +10,7 @@ const productRoutes = require("./routes/productRoutes");
 const brandRoutes = require("./routes/brandRoutes");
 const stockRoutes = require("./routes/stockRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const stripeRoutes = require("./routes/stripeRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const attachmentRoutes = require('./routes/attachmentRoutes');
 const { notFound, defaultError } = require("./middlewares/errorMiddleware");
@@ -30,7 +31,7 @@ app.use(express.static('public'))
 app.use("/api/user", userRoutes);
 //public routes will be here
 
-app.use(auth);
+// app.use(auth);
 //auth routes will be here
 
 app.use('/api/attachment', express.static('uploads'));
@@ -41,6 +42,7 @@ app.use("/api/stock", stockRoutes);
 app.use("/api/review", reviewRoutes);
 app.use('/api/attachment', attachmentRoutes);
 app.use("/api/category", categoryRoutes);
+app.use("/api", stripeRoutes);
 
 app.use(notFound);
 
