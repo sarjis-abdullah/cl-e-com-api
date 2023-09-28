@@ -2,7 +2,6 @@
 node_modules
 *.log
 *.gz
-
 # Coveralls
 coverage
 
@@ -14,9 +13,9 @@ benchmarks/graphs
 
 .idea
 .env
-.env
 .DS_Store
 dist/
-.env
 app/uploads
+app/.env
+.env
 .env
