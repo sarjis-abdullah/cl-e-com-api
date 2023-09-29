@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const dotenv = require("dotenv");
 dotenv.config();
+const CLIENT_URL = process.env.CLIENT_URL ?? 'http://localhost:8000/'
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const shippingData = shipping_address_collection = {
   allowed_countries: ['US', 'CA']
@@ -73,6 +74,9 @@ const CURRENCY = "usd"
 router.get("/create-payment-intent", async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
+    shipping_address_collection: {
+      allowed_countries: ["BD"],
+    },
     shipping_options,
     line_items: [
       {
@@ -115,12 +119,12 @@ router.get("/create-payment-intent", async (req, res) => {
       enabled: true,
     },
     mode: 'payment',
-    success_url: 'https://example.com/success',
-    cancel_url: 'https://example.com/cancel',
+    success_url: `${CLIENT_URL}success`,
+    cancel_url: `${CLIENT_URL}cancel`,
   });
 
   res.json({
-    url: session,
+    session,
   });
 });
 
