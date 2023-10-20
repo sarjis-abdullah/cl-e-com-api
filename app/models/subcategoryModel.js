@@ -1,6 +1,18 @@
 const mongoose = require('mongoose');
 
-const CategorySchema = new mongoose.Schema({
+const SubcategorySchema = new mongoose.Schema({
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true,
+    validate: {
+      validator: async function(value) {
+        const item = await mongoose.model('Category').findById(value);
+        return item !== null;
+      },
+      message: 'Invalid category ID',
+    },
+  },
   name: {
     type: String,
     required: true,
@@ -9,12 +21,6 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  products: [
-    { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }
-  ],
-  subcategories: [
-    { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory' }
-  ],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -49,6 +55,6 @@ const CategorySchema = new mongoose.Schema({
   },
 });
 
-const Category = mongoose.model('Category', CategorySchema);
+const Subcategory = mongoose.model('Subcategory', SubcategorySchema);
 
-module.exports = Category;
+module.exports = Subcategory;
