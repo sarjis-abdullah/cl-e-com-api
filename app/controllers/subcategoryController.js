@@ -1,12 +1,67 @@
-const Model = require('../models/reviewModel');
+const Model = require('../models/subcategoryModel');
 const dotenv     = require("dotenv");
+const { subcategoryResourceCollection } = require('../resources/subcategoryResources');
+const { getMetaInfo, sortAndPagination } = require('../utils');
 
 dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    const items = await Model.find();
-    res.json(items);
+    const pipeline = [];
+
+    if (req.query?.createdBy) {
+      const q = {
+        $match: {
+          createdBy: new mongoose.Types.ObjectId(req.query.createdBy),
+        },
+      }
+      pipeline.push(q)
+    }
+
+    if (req.query.searchQuery) {
+      const searchQuery = req.query.searchQuery
+      const sq = {
+        $match: {
+          $or: [
+            { name: { $regex: searchQuery, $options: 'i' } },
+            { 'stocks.sku': { $regex: searchQuery, $options: 'i' } }, 
+            { createdBy: { $in: [searchQuery] } },
+          ],
+        },
+      }
+      pipeline.push(sq)
+    }
+
+    if (needToInclude(req.query, "category.createdBy")) {
+      pipeline.push({
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      });
+    }
+    if (needToInclude(req.query, "category.updatedBy")) {
+      pipeline.push({
+        $lookup: {
+          from: "users",
+          localField: "updatedBy",
+          foreignField: "_id",
+          as: "updatedBy",
+        },
+      });
+    }
+
+    const { sorting, container } = sortAndPagination(req.query);
+    pipeline.push(sorting, container);
+
+    const [result] = await Model.aggregate(pipeline);
+
+    const additionalData = getMetaInfo(result, req.query);
+
+    const resources = subcategoryResourceCollection(result.items, additionalData, req.query)
+    res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

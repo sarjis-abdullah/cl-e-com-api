@@ -1,6 +1,6 @@
 const express = require('express');
-const controller = require('../controllers/reviewController');
-const { validateCreateItem, validateUpdateItem } = require('../middlewares/reviewMiddleware');
+const controller = require('../controllers/subcategoryController');
+const { validateCreateItem, validateUpdateItem } = require('../middlewares/subcategoryMiddleware');
 const { setUserData } = require('../middlewares/userMiddleware');
 
 const router = express.Router();
