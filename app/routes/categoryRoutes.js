@@ -1,15 +1,17 @@
 const express = require('express');
 const controller = require('../controllers/categoryController');
 const { validateCreateItem, validateUpdateItem } = require('../middlewares/categoryMiddleware');
-const { setUserData } = require('../middlewares/userMiddleware');
+const { setUserData, auth } = require('../middlewares/userMiddleware');
 
 const router = express.Router();
 
 router.get('/', controller.getAll);
 
-router.post('/', validateCreateItem, setUserData, controller.create);
-
 router.get('/:id', controller.getById);
+
+router.use(auth)
+
+router.post('/', validateCreateItem, setUserData, controller.create);
 
 router.patch('/:id', validateUpdateItem, setUserData, controller.update);
 

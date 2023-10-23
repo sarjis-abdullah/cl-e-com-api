@@ -63,6 +63,7 @@ const setUserData = (req, res, next) => {
   } else if (method === "PATCH" || method === "PUT") {
     req.body.updatedBy = req.user.userId;
   }
+  console.log(req.body);
   next();
 };
 

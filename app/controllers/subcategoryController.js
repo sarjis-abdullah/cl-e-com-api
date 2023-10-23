@@ -32,7 +32,7 @@ exports.getAll = async (req, res) => {
       pipeline.push(sq)
     }
 
-    if (needToInclude(req.query, "category.createdBy")) {
+    if (needToInclude(req.query, "s.createdBy")) {
       pipeline.push({
         $lookup: {
           from: "users",
@@ -42,7 +42,7 @@ exports.getAll = async (req, res) => {
         },
       });
     }
-    if (needToInclude(req.query, "category.updatedBy")) {
+    if (needToInclude(req.query, "s.updatedBy")) {
       pipeline.push({
         $lookup: {
           from: "users",

@@ -29,6 +29,7 @@ exports.getAll = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const data = {...req.body}
+    console.log(data, 3333);
     const item = new Model(data);
     const savedItem = await item.save();
     res.status(201).json(attachmentResource(savedItem));
