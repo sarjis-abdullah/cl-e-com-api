@@ -31,7 +31,7 @@ app.use(express.static('public'))
 app.use("/api/user", userRoutes);
 //public routes will be here
 
-// app.use(auth);
+app.use(auth);
 //auth routes will be here
 
 app.use('/api/attachment', express.static('uploads'));
