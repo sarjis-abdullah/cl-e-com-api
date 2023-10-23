@@ -1,12 +1,14 @@
 const Joi = require('joi');
 
 const createSchema = Joi.object({
-  name: Joi.string(),
+  name: Joi.string().required(),
+  categoryId: Joi.string().required(),
   description: Joi.string(),
 });
 
 const updateSchema = Joi.object({
-  name: Joi.string(),
+  name: Joi.string().required(),
+  categoryId: Joi.string().required(),
   description: Joi.string(),
 });
 

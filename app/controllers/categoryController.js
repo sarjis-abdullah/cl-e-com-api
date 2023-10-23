@@ -1,12 +1,78 @@
 const Model = require('../models/categoryModel');
 const dotenv     = require("dotenv");
+const { getMetaData, needToInclude, sortAndPaginate, sortAndPagination, getMetaInfo } = require('../utils');
+const { categoryResourceCollection } = require('../resources/categoryResources');
 
 dotenv.config();
 
 exports.getAll = async (req, res) => {
   try {
-    const items = await Model.find();
-    res.json(items);
+    const pipeline = [];
+
+    if (req.query?.createdBy) {
+      const q = {
+        $match: {
+          createdBy: new mongoose.Types.ObjectId(req.query.createdBy),
+        },
+      }
+      pipeline.push(q)
+    }
+
+    if (req.query.searchQuery) {
+      const searchQuery = req.query.searchQuery
+      const sq = {
+        $match: {
+          $or: [
+            { name: { $regex: searchQuery, $options: 'i' } },
+            { 'stocks.sku': { $regex: searchQuery, $options: 'i' } }, 
+            { createdBy: { $in: [searchQuery] } },
+          ],
+        },
+      }
+      pipeline.push(sq)
+    }
+
+    if (needToInclude(req.query, "category.createdBy")) {
+      pipeline.push({
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      });
+    }
+    if (needToInclude(req.query, "category.updatedBy")) {
+      pipeline.push({
+        $lookup: {
+          from: "users",
+          localField: "updatedBy",
+          foreignField: "_id",
+          as: "updatedBy",
+        },
+      });
+    }
+    if (needToInclude(req.query, "category.products")) {
+      pipeline.push({
+        $lookup: {
+          from: "products", // The name of the Category collection
+          localField: "products", // The field in Product that links to Category
+          foreignField: "_id", // The field in Category to match with
+          as: "products", // The name of the new field to store the category data
+        },
+      });
+      console.log(pipeline, 19181);
+    }
+
+    const { sorting, container } = sortAndPagination(req.query);
+    pipeline.push(sorting, container);
+
+    const [result] = await Model.aggregate(pipeline);
+
+    const additionalData = getMetaInfo(result, req.query);
+
+    const resources = categoryResourceCollection(result.items, additionalData, req.query)
+    res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
