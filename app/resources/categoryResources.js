@@ -1,5 +1,6 @@
 const { needToInclude } = require("../utils")
 const { productResourceCollection } = require("./productResources")
+const { subcategoryResourceCollection } = require("./subcategoryResources")
 const { userResource } = require("./userResources")
 
 function categoryResource(item, query = {}) {
@@ -8,13 +9,13 @@ function categoryResource(item, query = {}) {
     id: _id, createdAt,updatedAt, name, description
   }
 
-  if (needToInclude(query, 'brand.createdBy')) {
+  if (needToInclude(query, 'c.createdBy')) {
     data.createdBy = item.createdBy ? userResource(item.createdBy) : null
   }
-  if (needToInclude(query, 'category.subcategories')) {
-    data.subcategories = item.subcategories ?? null
+  if (needToInclude(query, 'c.subcategories')) {
+    data.subcategories = item.subcategories?.length ? subcategoryResourceCollection(item.subcategories) : []
   }
-  if (needToInclude(query, 'brand.updatedBy')) {
+  if (needToInclude(query, 'c.updatedBy')) {
     data.updatedBy = item.updatedBy ? userResource(item.updatedBy) : null
   }
   if (needToInclude(query, 'category.products')) {

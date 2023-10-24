@@ -1,7 +1,9 @@
 const Model = require('../models/subcategoryModel');
+const Category = require('../models/categoryModel');
 const dotenv     = require("dotenv");
-const { subcategoryResourceCollection } = require('../resources/subcategoryResources');
+const { subcategoryResourceCollection } = require('../resources/subcategoryResources.js');
 const { getMetaInfo, sortAndPagination, needToInclude } = require('../utils');
+const { subcategoryResource } = require('../resources/subcategoryResources');
 
 dotenv.config();
 
@@ -52,6 +54,16 @@ exports.getAll = async (req, res) => {
         },
       });
     }
+    if (needToInclude(req.query, "sc.category")) {
+      pipeline.push({
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "categoryId",
+        },
+      });
+    }
 
     const { sorting, container } = sortAndPagination(req.query);
     pipeline.push(sorting, container);
@@ -69,10 +81,15 @@ exports.getAll = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
+    
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
+    // const categories = await Category.find({ _id: { $in: [req.body.categoryId] } });
+    const category = await Category.findById(req.body.categoryId);
+    category.subcategories.push(savedItem)
     res.status(201).json(savedItem);
+    // res.status(201).json(subcategoryResource(savedItem));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -80,12 +97,23 @@ exports.create = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const item = await Model.findById(req.params.id);
+    let modelQuery = Model.findById(req.params.id)
+    if (needToInclude(req.query, 'sc.createdBy')) {
+      modelQuery = modelQuery.populate('createdBy');
+    }
+    if (needToInclude(req.query, 'sc.updatedBy')) {
+      modelQuery = modelQuery.populate('updatedBy');
+    }
+    if (needToInclude(req.query, 'sc.category')) {
+      modelQuery = modelQuery.populate('categoryId');
+    }
+    
+    const item = await modelQuery.exec();
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-
-    res.json(item);
+    
+    res.json(subcategoryResource(item, req.query));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -100,7 +128,7 @@ exports.update = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json(item);
+    res.json(subcategoryResource(item));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

@@ -1,7 +1,7 @@
 const Model = require('../models/categoryModel');
 const dotenv     = require("dotenv");
 const { getMetaData, needToInclude, sortAndPaginate, sortAndPagination, getMetaInfo } = require('../utils');
-const { categoryResourceCollection } = require('../resources/categoryResources');
+const { categoryResourceCollection, categoryResource } = require('../resources/categoryResources');
 
 dotenv.config();
 
@@ -61,7 +61,16 @@ exports.getAll = async (req, res) => {
           as: "products", // The name of the new field to store the category data
         },
       });
-      console.log(pipeline, 19181);
+    }
+    if (needToInclude(req.query, "c.sc")) {
+      pipeline.push({
+        $lookup: {
+          from: "subcategories", // The name of the Category collection
+          localField: "subcategories", // The field in Product that links to Category
+          foreignField: "_id", // The field in Category to match with
+          as: "subcategories", // The name of the new field to store the category data
+        },
+      });
     }
 
     const { sorting, container } = sortAndPagination(req.query);
@@ -83,7 +92,7 @@ exports.create = async (req, res) => {
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
-    res.status(201).json(savedItem);
+    res.status(201).json(categoryResource(savedItem));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -91,12 +100,22 @@ exports.create = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const item = await Model.findById(req.params.id);
+    let modelQuery = Model.findById(req.params.id)
+    if (needToInclude(req.query, 'c.createdBy')) {
+      modelQuery = modelQuery.populate('createdBy');
+    }
+    if (needToInclude(req.query, 'c.updatedBy')) {
+      modelQuery = modelQuery.populate('updatedBy');
+    }
+    if (needToInclude(req.query, 'c.subcategories')) {
+      modelQuery = modelQuery.populate('subcategories');
+    }
+    
+    const item = await modelQuery.exec();
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-
-    res.json(item);
+    res.json(categoryResource(item, req.query));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -111,7 +130,7 @@ exports.update = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json(item);
+    res.json(categoryResource(item));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
