@@ -13,6 +13,7 @@ function categoryResource(item, query = {}) {
     data.createdBy = item.createdBy ? userResource(item.createdBy) : null
   }
   if (needToInclude(query, 'c.subcategories')) {
+    console.log(item.subcategories, "subcategories");
     data.subcategories = item.subcategories?.length ? subcategoryResourceCollection(item.subcategories) : []
   }
   if (needToInclude(query, 'c.updatedBy')) {

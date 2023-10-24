@@ -60,7 +60,7 @@ exports.getAll = async (req, res) => {
           from: "categories",
           localField: "categoryId",
           foreignField: "_id",
-          as: "categoryId",
+          as: "category",
         },
       });
     }
@@ -71,6 +71,7 @@ exports.getAll = async (req, res) => {
     const [result] = await Model.aggregate(pipeline);
 
     const additionalData = getMetaInfo(result, req.query);
+    console.log(result.items);
 
     const resources = subcategoryResourceCollection(result.items, additionalData, req.query)
     res.json(resources);
@@ -87,9 +88,9 @@ exports.create = async (req, res) => {
     const savedItem = await item.save();
     // const categories = await Category.find({ _id: { $in: [req.body.categoryId] } });
     const category = await Category.findById(req.body.categoryId);
-    category.subcategories.push(savedItem)
-    res.status(201).json(savedItem);
-    // res.status(201).json(subcategoryResource(savedItem));
+    console.log(savedItem._id);
+    category.subcategories.push(savedItem._id)
+    res.status(201).json(subcategoryResource(savedItem, req.query));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

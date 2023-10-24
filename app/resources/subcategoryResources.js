@@ -15,8 +15,8 @@ function subcategoryResource(item, query = {}) {
     data.updatedBy = item.updatedBy ? userResource(item.updatedBy, query) : null
   }
   if (needToInclude(query, 'sc.category')) {
-    data.category = item.categoryId?.length ? item.categoryId  : null
-    // data.category = item.categoryId?.length ? categoryResource(item.categoryId[0]) : null
+    data.category = item.categoryId
+    // data.category = item.categoryId ? categoryResource(item.categoryId) : null
   }
 
   return data

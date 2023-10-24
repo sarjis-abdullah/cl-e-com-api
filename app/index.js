@@ -4,6 +4,27 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require('cors');
 dotenv.config();
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.urlencoded({extended: false}));
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+// mongoose.connect(process.env.MONGO_BROWSER_URL, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   dbName: "cl-ecommerse-db"
+// }).then((result) => {
+//   console.log("Database connected");
+// }).catch((err) => {
+//   console.log("Database error", err);
+// });
+
+
 const taskRoutes = require("./routes/taskRoutes");
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
@@ -17,17 +38,9 @@ const attachmentRoutes = require('./routes/attachmentRoutes');
 const { notFound, defaultError } = require("./middlewares/errorMiddleware");
 const { auth } = require("./middlewares/userMiddleware");
 
-const app = express();
-app.use(cors());
+
 const port = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
-app.use(express.urlencoded({extended: false}));
-
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
 app.use(express.static('public'))
 
 app.use("/api/user", userRoutes);

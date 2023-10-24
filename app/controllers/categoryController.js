@@ -19,17 +19,17 @@ exports.getAll = async (req, res) => {
     }
 
     if (req.query.searchQuery) {
-      const searchQuery = req.query.searchQuery
-      const sq = {
-        $match: {
-          $or: [
-            { name: { $regex: searchQuery, $options: 'i' } },
-            { 'stocks.sku': { $regex: searchQuery, $options: 'i' } }, 
-            { createdBy: { $in: [searchQuery] } },
-          ],
-        },
-      }
-      pipeline.push(sq)
+      // const searchQuery = req.query.searchQuery
+      // const sq = {
+      //   $match: {
+      //     $or: [
+      //       { name: { $regex: searchQuery, $options: 'i' } },
+      //       { 'stocks.sku': { $regex: searchQuery, $options: 'i' } }, 
+      //       { createdBy: { $in: [searchQuery] } },
+      //     ],
+      //   },
+      // }
+      // pipeline.push(sq)
     }
 
     if (needToInclude(req.query, "category.createdBy")) {
@@ -62,7 +62,7 @@ exports.getAll = async (req, res) => {
         },
       });
     }
-    if (needToInclude(req.query, "c.sc")) {
+    if (needToInclude(req.query, "c.subcategories")) {
       pipeline.push({
         $lookup: {
           from: "subcategories", // The name of the Category collection
@@ -71,6 +71,7 @@ exports.getAll = async (req, res) => {
           as: "subcategories", // The name of the new field to store the category data
         },
       });
+      console.log("subcategories");
     }
 
     const { sorting, container } = sortAndPagination(req.query);
@@ -79,6 +80,8 @@ exports.getAll = async (req, res) => {
     const [result] = await Model.aggregate(pipeline);
 
     const additionalData = getMetaInfo(result, req.query);
+
+    console.log(result.items, "result.items");
 
     const resources = categoryResourceCollection(result.items, additionalData, req.query)
     res.json(resources);
@@ -107,14 +110,16 @@ exports.getById = async (req, res) => {
     if (needToInclude(req.query, 'c.updatedBy')) {
       modelQuery = modelQuery.populate('updatedBy');
     }
-    if (needToInclude(req.query, 'c.subcategories')) {
-      modelQuery = modelQuery.populate('subcategories');
-    }
-    
+    // if (needToInclude(req.query, 'c.subcategories')) {
+    //   console.log(11111);
+    //   modelQuery = modelQuery.populate('subcategories');
+    // }
+    modelQuery = modelQuery.populate('subcategories');
     const item = await modelQuery.exec();
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
+    console.log(item, 123);
     res.json(categoryResource(item, req.query));
   } catch (err) {
     res.status(500).json({ error: err.message });
