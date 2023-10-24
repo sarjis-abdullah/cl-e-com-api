@@ -8,6 +8,11 @@ dotenv.config();
 const userRegisterSchema = Joi.object({
   name: Joi.string().min(3).max(20).required(),
   email: Joi.string().email().required(),
+  phone: Joi.string(),
+  address: Joi.string(),
+  city: Joi.string(),
+  zip: Joi.string(),
+  state: Joi.string(),
   password: Joi.string().min(6).required(),
 });
 
