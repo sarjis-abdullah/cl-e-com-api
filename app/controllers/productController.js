@@ -59,6 +59,27 @@ exports.getAll = async (req, res) => {
       pipeline.push(q)
     }
 
+    if (req.query?.subcategoryId) {
+      const q = {
+        $match: {
+          subcategoryId: new mongoose.Types.ObjectId(req.query.subcategoryId),
+        },
+      }
+      pipeline.push(q)
+    }
+
+    if (req.query?.categoryIds && Array.isArray(req.query.categoryIds)) {
+      const categoryIds = req.query.categoryIds.map((categoryId) => new mongoose.Types.ObjectId(categoryId));
+      const categoryMatch = {
+        $match: {
+          categories: {
+            $in: categoryIds,
+          },
+        },
+      };
+      pipeline.push(categoryMatch);
+    }
+
     if (req.query.searchQuery) {
       const searchQuery = req.query.searchQuery
       const sq = {
@@ -134,6 +155,16 @@ exports.getAll = async (req, res) => {
         },
       });
     }
+    if (needToInclude(req.query, "product.subcategory")) {
+      pipeline.push({
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategoryId",
+          foreignField: "_id",
+          as: "subcategory",
+        },
+      });
+    }
 
     const { sorting, container } = sortAndPagination(req.query);
     pipeline.push(sorting, container);
@@ -142,6 +173,7 @@ exports.getAll = async (req, res) => {
 
     const additionalData = getMetaInfo(result, req.query);
 
+    // console.log(result.items, "result.items");
     const resources = productResourceCollection(
       result.items,
       additionalData,
@@ -173,7 +205,15 @@ exports.create = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const item = await Model.findById(req.params.id).populate("categories");
+    let modelQuery = Model.findById(req.params.id)
+    if (needToInclude(req.query, "product.categories")){
+      modelQuery = modelQuery.populate("categories");
+    }
+    if (needToInclude(req.query, "product.subcategory")){
+      modelQuery = modelQuery.populate("subcategoryId");
+    }
+    
+    const item = await modelQuery.exec();
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }

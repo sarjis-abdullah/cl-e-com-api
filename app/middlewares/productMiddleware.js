@@ -5,6 +5,7 @@ const createSchema = Joi.object({
   description: Joi.string().required(),
   brandId: Joi.string().required(),
   categories: Joi.array().required(),
+  subcategoryId: Joi.string().required(),
   attachments: Joi.array().required(),
   type: Joi.string().valid('Physical', 'Online'),
 });

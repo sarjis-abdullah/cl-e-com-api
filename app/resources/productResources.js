@@ -3,6 +3,7 @@ const { attachmentResourceCollection } = require("./attachmentResources");
 const {brandResource, brandResourceCollection} = require("./brandResources");
 const { categoryResourceCollection } = require("./categoryResources");
 const { stockResourceCollection } = require("./stockResources");
+const { subcategoryResource } = require("./subcategoryResources");
 const { userResource, userResourceCollection } = require("./userResources");
 
 function productResource(item, query = {}) {
@@ -29,6 +30,17 @@ function productResource(item, query = {}) {
   }
   if (needToInclude(query, 'product.attachments')) {
     data.attachments = attachmentResourceCollection(item.attachments)
+  }
+  if (needToInclude(query, 'product.subcategory')) {
+    let sub = {}
+    if (item.subcategory?.length) {
+      console.log(12345);
+      sub = item.subcategory[0]
+    } else {
+      console.log(54321, item.subcategoryId, item.subcategory);
+      sub = item.subcategoryId
+    }
+    data.subcategory = subcategoryResource(sub)
   }
   return data
 }
