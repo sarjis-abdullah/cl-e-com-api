@@ -13,6 +13,7 @@ const userRegisterSchema = Joi.object({
   city: Joi.string(),
   zip: Joi.string(),
   state: Joi.string(),
+  type: Joi.string().valid("user", "admin", "customer"),
   password: Joi.string().min(6).required(),
 });
 
