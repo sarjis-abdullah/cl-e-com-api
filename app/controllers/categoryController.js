@@ -2,6 +2,8 @@ const Model = require('../models/categoryModel');
 const dotenv     = require("dotenv");
 const { getMetaData, needToInclude, sortAndPaginate, sortAndPagination, getMetaInfo } = require('../utils');
 const { categoryResourceCollection, categoryResource } = require('../resources/categoryResources');
+const Subcategory = require('../models/subcategoryModel');
+const { subcategoryResourceCollection } = require('../resources/subcategoryResources');
 
 dotenv.config();
 
@@ -114,7 +116,9 @@ exports.getById = async (req, res) => {
     //   console.log(11111);
     //   modelQuery = modelQuery.populate('subcategories');
     // }
+    console.log(141141);
     modelQuery = modelQuery.populate('subcategories');
+    console.log(7676);
     const item = await modelQuery.exec();
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });

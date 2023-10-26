@@ -12,9 +12,9 @@ const CategorySchema = new mongoose.Schema({
   products: [
     { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }
   ],
-  subcategories: [
-    { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory' }
-  ],
+  // subcategories: [
+  //   { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory' }
+  // ],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

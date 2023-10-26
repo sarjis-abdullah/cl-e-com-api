@@ -14,7 +14,9 @@ function userResourceCollection(items, additionalData = {}, query) {
       meta: additionalData
     }
   }
-  return result
+  return {
+    data: result
+  }
 }
 
 module.exports = {

@@ -9,6 +9,8 @@ router.get('/', controller.getAll);
 
 router.get('/:id', controller.getById);
 
+router.get('/by/:categoryId', controller.getSubcategoriesByACategory);
+
 router.use(auth)
 
 router.post('/', validateCreateItem, setUserData, controller.create);

@@ -1,5 +1,5 @@
 {
-  "watch": ["app/index.js", "Dockerfile", "docker-compose.yml"],
+  "watch": ["./"],
   "ext": "js,yaml,yml",
   "execMap": {
     "yml": "docker-compose up --build"

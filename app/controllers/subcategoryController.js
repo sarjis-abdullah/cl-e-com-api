@@ -4,6 +4,7 @@ const dotenv     = require("dotenv");
 const { subcategoryResourceCollection } = require('../resources/subcategoryResources.js');
 const { getMetaInfo, sortAndPagination, needToInclude } = require('../utils');
 const { subcategoryResource } = require('../resources/subcategoryResources');
+const Subcategory = require('../models/subcategoryModel');
 
 dotenv.config();
 
@@ -80,16 +81,41 @@ exports.getAll = async (req, res) => {
   }
 };
 
+exports.getSubcategoriesByACategory = async (req, res) => {
+  try {
+    let modelQuery = Subcategory.find({categoryId: req.params.categoryId})
+    if (needToInclude(req.query, 'sc.createdBy')) {
+      console.log(838338);
+      modelQuery = modelQuery.populate('createdBy');
+    }
+    if (needToInclude(req.query, 'sc.updatedBy')) {
+      console.log(5252525);
+      modelQuery = modelQuery.populate('updatedBy');
+    }
+    console.log(req.query);
+  
+    const item = await modelQuery.exec();
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+    res.json(subcategoryResourceCollection(item, {}, req.query));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.create = async (req, res) => {
   try {
     
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
+    console.log(savedItem, "savedItem");
     // const categories = await Category.find({ _id: { $in: [req.body.categoryId] } });
-    const category = await Category.findById(req.body.categoryId);
-    console.log(savedItem._id);
-    category.subcategories.push(savedItem._id)
+    // const category = await Category.findById(req.body.categoryId);
+    // console.log(savedItem._id);
+    // category.subcategories.push(savedItem._id)
+    // res.status(201).json(savedItem);
     res.status(201).json(subcategoryResource(savedItem, req.query));
   } catch (err) {
     res.status(400).json({ error: err.message });

@@ -42,7 +42,9 @@ function stockResourceCollection(items, additionalData = {}, query) {
       meta: additionalData
     }
   }
-  return result
+  return {
+    data: result
+  }
 }
 
 module.exports = {

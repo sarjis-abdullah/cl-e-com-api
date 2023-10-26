@@ -23,6 +23,7 @@ function subcategoryResource(item, query = {}) {
 }
 
 function subcategoryResourceCollection(items, additionalData = {}, query) {
+  console.log(query, "query");
   const result = items.map(item => subcategoryResource(item, query))
   if (Object.keys(additionalData).length) {
     return {
@@ -30,7 +31,9 @@ function subcategoryResourceCollection(items, additionalData = {}, query) {
       meta: additionalData
     }
   }
-  return result
+  return {
+    data: result
+  }
 }
 
 module.exports = {
