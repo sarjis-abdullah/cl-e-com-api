@@ -44,6 +44,11 @@ To run tests
 ```sh
 docker-compose exec -e MONGODB_URL=mongodb://mongo:27017/noobjs_test node npm test
 ```
+To create admin seed user
+
+```sh
+node app/seeders/userSeeder.js
+```
 
 Note that we are overriding the environment variable set in `.env` file because we don't want our data erased by the tests.
 
