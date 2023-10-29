@@ -72,7 +72,7 @@ exports.getAll = async (req, res) => {
     const [result] = await Model.aggregate(pipeline);
 
     const additionalData = getMetaInfo(result, req.query);
-    console.log(result.items);
+    // console.log(result.items);
 
     const resources = subcategoryResourceCollection(result.items, additionalData, req.query)
     res.json(resources);

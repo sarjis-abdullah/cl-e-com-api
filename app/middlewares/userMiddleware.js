@@ -63,13 +63,14 @@ const authenticateToken = (req, res, next) => {
   }
 };
 const setUserData = (req, res, next) => {
+  
   const { method } = req;
   if (method === "POST") {
     req.body.createdBy = req.user.userId;
   } else if (method === "PATCH" || method === "PUT") {
     req.body.updatedBy = req.user.userId;
   }
-  console.log(req.body);
+  console.log(req.body, 12123);
   next();
 };
 

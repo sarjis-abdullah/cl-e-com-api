@@ -22,7 +22,7 @@ const AttachmentSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
+    required: false,
     validate: {
       validator: async function(value) {
         const item = await mongoose.model('User').findById(value);
