@@ -46,7 +46,7 @@ function needToInclude(query, key) {
 function sortAndPagination(query) {
   const { page, limit } = getPageLimit(query);
   const sortBy = query?.sortBy == "updatedAt" ? "updatedAt" : "createdAt";
-  const sortDirection = query?.sortDirection === "desc" ? -1 : 1;
+  const sortDirection = query?.sortDirection === "asc" ? -1 : 1;
   const sorting = { $sort: { [sortBy]: sortDirection } }
 
   const container = {
