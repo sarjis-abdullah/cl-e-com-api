@@ -2,20 +2,21 @@ const Joi = require('joi');
 
 const createSchema = Joi.object({
   name: Joi.string().required(),
-  description: Joi.string().required(),
-  brandId: Joi.string().required(),
+  description: Joi.string(),
+  brandId: Joi.string(),
   categories: Joi.array().required(),
   subcategoryId: Joi.string().required(),
-  attachments: Joi.array().required(),
+  attachments: Joi.array(),
   type: Joi.string().valid('Physical', 'Online'),
 });
 
 const updateSchema = Joi.object({
   name: Joi.string().required(),
-  description: Joi.string().required(),
+  description: Joi.string(),
   brandId: Joi.string().required(),
+  subcategoryId: Joi.string().required(),
   categories: Joi.array().required(),
-  attachments: Joi.array().required(),
+  attachments: Joi.array(),
   type: Joi.string().valid('Physical', 'Online'),
 });
 

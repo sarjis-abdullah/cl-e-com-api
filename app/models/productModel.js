@@ -20,6 +20,7 @@ const productSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Attachment",
+      required: false,
     },
   ],
   categories: [
@@ -35,11 +36,13 @@ const productSchema = new mongoose.Schema({
   brandId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Brand",
+    required: false,
   },
   reviews: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Review",
+      required: false,
     },
   ],
   type: {
