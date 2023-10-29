@@ -109,13 +109,7 @@ exports.getById = async (req, res) => {
     if (needToInclude(req.query, 'c.updatedBy')) {
       modelQuery = modelQuery.populate('updatedBy');
     }
-    // if (needToInclude(req.query, 'c.subcategories')) {
-    //   console.log(11111);
-    //   modelQuery = modelQuery.populate('subcategories');
-    // }
-    console.log(141141);
-    modelQuery = modelQuery.populate('subcategories');
-    console.log(7676);
+    
     const item = await modelQuery.exec();
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
