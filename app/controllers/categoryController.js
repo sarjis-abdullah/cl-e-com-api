@@ -1,6 +1,6 @@
 const Model = require('../models/categoryModel');
 const dotenv     = require("dotenv");
-const { getMetaData, needToInclude, sortAndPaginate, sortAndPagination, getMetaInfo } = require('../utils');
+const { needToInclude, sortAndPagination, getMetaInfo } = require('../utils');
 const { categoryResourceCollection, categoryResource } = require('../resources/categoryResources');
 const Subcategory = require('../models/subcategoryModel');
 const { subcategoryResourceCollection } = require('../resources/subcategoryResources');
@@ -73,7 +73,6 @@ exports.getAll = async (req, res) => {
           as: "subcategories", // The name of the new field to store the category data
         },
       });
-      console.log("subcategories");
     }
 
     const { sorting, container } = sortAndPagination(req.query);
@@ -82,8 +81,6 @@ exports.getAll = async (req, res) => {
     const [result] = await Model.aggregate(pipeline);
 
     const additionalData = getMetaInfo(result, req.query);
-
-    console.log(result.items, "result.items");
 
     const resources = categoryResourceCollection(result.items, additionalData, req.query)
     res.json(resources);

@@ -12,28 +12,28 @@ exports.getAll = async (req, res) => {
   try {
     const pipeline = [];
 
-    if (req.query?.createdBy) {
-      const q = {
-        $match: {
-          createdBy: new mongoose.Types.ObjectId(req.query.createdBy),
-        },
-      }
-      pipeline.push(q)
-    }
+    // if (req.query?.createdBy) {
+    //   const q = {
+    //     $match: {
+    //       createdBy: new mongoose.Types.ObjectId(req.query.createdBy),
+    //     },
+    //   }
+    //   pipeline.push(q)
+    // }
 
-    if (req.query.searchQuery) {
-      const searchQuery = req.query.searchQuery
-      const sq = {
-        $match: {
-          $or: [
-            { name: { $regex: searchQuery, $options: 'i' } },
-            { 'stocks.sku': { $regex: searchQuery, $options: 'i' } }, 
-            { createdBy: { $in: [searchQuery] } },
-          ],
-        },
-      }
-      pipeline.push(sq)
-    }
+    // if (req.query.searchQuery) {
+    //   const searchQuery = req.query.searchQuery
+    //   const sq = {
+    //     $match: {
+    //       $or: [
+    //         { name: { $regex: searchQuery, $options: 'i' } },
+    //         { 'stocks.sku': { $regex: searchQuery, $options: 'i' } }, 
+    //         { createdBy: { $in: [searchQuery] } },
+    //       ],
+    //     },
+    //   }
+    //   pipeline.push(sq)
+    // }
 
     if (needToInclude(req.query, "s.createdBy")) {
       pipeline.push({
@@ -72,7 +72,6 @@ exports.getAll = async (req, res) => {
     const [result] = await Model.aggregate(pipeline);
 
     const additionalData = getMetaInfo(result, req.query);
-    // console.log(result.items);
 
     const resources = subcategoryResourceCollection(result.items, additionalData, req.query)
     res.json(resources);
@@ -85,14 +84,11 @@ exports.getSubcategoriesByACategory = async (req, res) => {
   try {
     let modelQuery = Subcategory.find({categoryId: req.params.categoryId})
     if (needToInclude(req.query, 'sc.createdBy')) {
-      console.log(838338);
       modelQuery = modelQuery.populate('createdBy');
     }
     if (needToInclude(req.query, 'sc.updatedBy')) {
-      console.log(5252525);
       modelQuery = modelQuery.populate('updatedBy');
     }
-    console.log(req.query);
   
     const item = await modelQuery.exec();
     if (!item) {
