@@ -1,7 +1,8 @@
 const Joi = require('joi');
 
 const createSchema = Joi.object({
-  type: Joi.string(),
+  type: Joi.string().required(),
+  fileSource: Joi.required(),
 });
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpg', 'image/png']
