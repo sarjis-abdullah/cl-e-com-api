@@ -51,11 +51,9 @@ app.use("/api/product", productRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/subcategory", subcategoryRoutes);
 //public routes will be here
-
 app.use(auth);
 //auth routes will be here
 
-app.use('/api/attachment', express.static('uploads'));
 app.use("/api/task", taskRoutes);
 
 app.use("/api/brand", brandRoutes);
