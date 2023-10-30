@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 const createSchema = Joi.object({
   name: Joi.string().required(),
-  description: Joi.string(),
+  description: Joi.string().allow(''),
   brandId: Joi.string(),
   categories: Joi.array().required(),
   subcategoryId: Joi.string().required(),
@@ -12,7 +12,7 @@ const createSchema = Joi.object({
 
 const updateSchema = Joi.object({
   name: Joi.string().required(),
-  description: Joi.string(),
+  description: Joi.string().allow(''),
   brandId: Joi.string().required(),
   subcategoryId: Joi.string().required(),
   categories: Joi.array().required(),
