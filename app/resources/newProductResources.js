@@ -47,7 +47,7 @@ function pResource(item, query = {}) {
   const {_id, createdAt,updatedAt, name, description} = item
   const data = {
     id: _id,
-    createdAt, updatedAt, name, description
+    createdAt, updatedAt, name, description, type
   };
 
   if (needToInclude(query, 'product.subcategory')) {

@@ -1,6 +1,6 @@
 const express = require('express');
 const controller = require('../controllers/orderController');
-const { orderValidationSchema } = require('../middlewares/orderMiddleware');
+const { orderValidationSchema, validateUpdateItem } = require('../middlewares/orderMiddleware');
 const { setUserData, auth } = require('../middlewares/userMiddleware');
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.get('/:id', controller.getById);
 
 router.post('/', orderValidationSchema, setUserData, controller.create);
 
-// router.patch('/:id', validateUpdateItem, setUserData, controller.update);
+router.patch('/:id', validateUpdateItem, setUserData, controller.update);
 
 // router.delete('/:id', controller.delete);
 

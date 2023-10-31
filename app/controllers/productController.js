@@ -58,6 +58,14 @@ exports.getAll = async (req, res) => {
       }
       pipeline.push(q)
     }
+    if (true) {
+      const q = {
+        $match: {
+          _id: new mongoose.Types.ObjectId("653feb1aa935c61aac42cc9d"),
+        },
+      }
+      pipeline.push(q)
+    }
 
     if (req.query?.subcategoryId) {
       const q = {
@@ -177,7 +185,7 @@ exports.getAll = async (req, res) => {
     const resources = productResourceCollection(
       result.items,
       additionalData,
-      req.query
+      req.query,
     );
 
     res.json(resources);
@@ -205,18 +213,23 @@ exports.create = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    let modelQuery = Model.findById(req.params.id)
+    let modelQuery = Model.findOne({_id: req.params.id})
     if (needToInclude(req.query, "product.categories")){
       modelQuery = modelQuery.populate("categories");
     }
     if (needToInclude(req.query, "product.subcategory")){
       modelQuery = modelQuery.populate("subcategoryId");
     }
+    if (needToInclude(req.query, "product.stocks")){
+      console.log("653feb1aa935c61aac42cc9d");
+      modelQuery = modelQuery.populate("stocks");
+    }
     
     const item = await modelQuery.exec();
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
+    console.log(item, 63636);
     const resource = productResource(item, req.query);
     res.json(resource);
   } catch (err) {

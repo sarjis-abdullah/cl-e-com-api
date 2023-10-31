@@ -17,7 +17,7 @@ const orderSchema = new mongoose.Schema(
     },
     orderStatus: {
       type: String,
-      enum: ["pending", "processing", "shipped", "delivered"],
+      enum: ["pending", "processing","confirmed", "shipped", "delivered"],
       default: "pending",
     },
     paymentMethod: {
@@ -36,19 +36,23 @@ const orderSchema = new mongoose.Schema(
     },
     subtotal: {
       type: Number,
-      required: true,
+      required: false,
+      default: 0,
     },
     tax: {
       type: Number,
       required: false,
+      default: 0,
     },
     shippingCost: {
       type: Number,
       required: false,
+      default: 0,
     },
     totalCost: {
       type: Number,
-      required: true,
+      required: false,
+      default: 0,
     },
     products: [
       {

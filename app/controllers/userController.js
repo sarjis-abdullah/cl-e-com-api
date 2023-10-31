@@ -67,7 +67,7 @@ exports.getById = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    res.json(getUser(userResource(item)));
+    res.json(userResource(item));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

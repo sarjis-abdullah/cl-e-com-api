@@ -8,22 +8,31 @@ const orderValidationSchema = Joi.object({
   paymentMethod: Joi.string().valid('card', 'cash').default('card'),
   paymentStatus: Joi.string().valid('paid', 'pending', 'failed').default('pending'),
   shippingMethod: Joi.string().allow(''),
-  subtotal: Joi.number().required(),
+  subtotal: Joi.number().required().allow(''),
   tax: Joi.number().allow(''),
   shippingCost: Joi.number().allow(''),
-  totalCost: Joi.number().required(),
-  products: Joi.array().items(Joi.string()).default([]),
+  totalCost: Joi.number().allow(''),
+  products: Joi.array().items(Joi.object()).default([]),
   discountCode: Joi.string().allow(''),
   orderNotes: Joi.string().allow(''),
   trackingNumber: Joi.string().allow(''),
   returnRefundStatus: Joi.string().allow(''),
 });
-
-// module.exports = orderValidationSchema;
+const validateUpdateItem = Joi.object({
+  orderStatus: Joi.string().valid('pending', 'processing',"confirmed", 'shipped', 'delivered').default('pending'),
+  paymentStatus: Joi.string().valid('paid', 'pending', 'failed').default('pending'),
+});
 
 module.exports = {
   orderValidationSchema: (req, res, next) => {
     const { error } = orderValidationSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    next();
+  },
+  validateUpdateItem: (req, res, next) => {
+    const { error } = validateUpdateItem.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }

@@ -10,7 +10,7 @@ exports.getAll = async (req, res) => {
   try {
     let modelQuery = Model.find({})
 
-    if (needToInclude(req.query, 'stock.brand')) {
+    if (needToInclude(req.query, 'stock.product') || true) {
       modelQuery = modelQuery.populate('productId');
     }
 
@@ -41,9 +41,9 @@ exports.create = async (req, res) => {
     const item = new Model(data);
     const savedItem = await item.save();
 
-    const product = await Product.findById(data.productId)
-    product.stocks.push(savedItem)
-    await product.save();
+    // const product = await Product.findById(data.productId)
+    // product.stocks.push(savedItem)
+    // await product.save();
 
     
     const resource = stockResource(savedItem, req.query)
