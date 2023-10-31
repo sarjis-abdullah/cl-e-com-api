@@ -38,6 +38,7 @@ const subcategoryRoutes = require("./routes/subcategoryRoutes");
 const stripeRoutes = require("./routes/stripeRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const attachmentRoutes = require('./routes/attachmentRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 const { notFound, defaultError } = require("./middlewares/errorMiddleware");
 const { auth } = require("./middlewares/userMiddleware");
 
@@ -58,6 +59,7 @@ app.use(auth);
 app.use('/api/attachment', express.static('uploads'));
 app.use("/api/task", taskRoutes);
 
+app.use("/api/order", orderRoutes);
 app.use("/api/brand", brandRoutes);
 app.use("/api/stock", stockRoutes);
 app.use("/api/review", reviewRoutes);
