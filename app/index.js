@@ -13,19 +13,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-// mongoose.connect("mongodb://localhost:27017", {
+// mongoose.connect(process.env.MONGO_URI, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
-//   dbName: "test-db"
-// }).then((result) => {
-//   console.log("Database connected");
-// }).catch((err) => {
-//   console.log("Database error", err);
 // });
+mongoose.connect("mongodb://localhost:27017", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  dbName: "test-db"
+}).then((result) => {
+  console.log("Database connected");
+}).catch((err) => {
+  console.log("Database error", err);
+});
 
 
 const taskRoutes = require("./routes/taskRoutes");
@@ -51,6 +51,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/subcategory", subcategoryRoutes);
+app.use("/api", stripeRoutes);
 //public routes will be here
 app.use(auth);
 //auth routes will be here
@@ -62,8 +63,6 @@ app.use("/api/brand", brandRoutes);
 app.use("/api/stock", stockRoutes);
 app.use("/api/review", reviewRoutes);
 app.use('/api/attachment', attachmentRoutes);
-
-app.use("/api", stripeRoutes);
 
 app.use(notFound);
 
