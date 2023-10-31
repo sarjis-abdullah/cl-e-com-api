@@ -7,7 +7,7 @@ const { subcategoryResource } = require("./subcategoryResources");
 const { userResource, userResourceCollection } = require("./userResources");
 
 function productResource(item, query = {}) {
-  const {_id, createdAt,updatedAt, name, description, type} = item
+  const {_id, createdAt,updatedAt, name, description} = item
   const data = {
     id: _id,
     createdAt, updatedAt, name, description, type
@@ -34,10 +34,8 @@ function productResource(item, query = {}) {
   if (needToInclude(query, 'product.subcategory')) {
     let sub = {}
     if (item.subcategory?.length) {
-      console.log(12345);
       sub = item.subcategory[0]
     } else {
-      console.log(54321, item.subcategoryId, item.subcategory);
       sub = item.subcategoryId
     }
     data.subcategory = subcategoryResource(sub)
@@ -45,7 +43,7 @@ function productResource(item, query = {}) {
   return data
 }
 
-function productResourceCollection(items, additionalData, query) {
+function productResourceCollection(items, additionalData, query, wrapData = true) {
   const result = items.map(item => productResource(item, query))
   if (Object.keys(additionalData).length) {
     return {
@@ -53,7 +51,8 @@ function productResourceCollection(items, additionalData, query) {
       meta: additionalData
     }
   }
-  return {
+ 
+  return !wrapData ? result : {
     data: result
   }
 }

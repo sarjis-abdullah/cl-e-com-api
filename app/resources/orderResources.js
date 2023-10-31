@@ -2,33 +2,76 @@ const { needToInclude } = require("../utils");
 const { productResourceCollection } = require("./productResources");
 const { userResource } = require("./userResources");
 
-function orderResource(item, query = {}, fromCollection = false) {
+function orderResource(item, query = {}, wrapData = false) {
+  const {
+    _id,
+    createdAt,
+    updatedAt,
+    orderBy,
+    shippingAddress,
+    billingAddress,
+    orderStatus,
+    paymentMethod,
+    paymentStatus,
+    subtotal,
+    tax,
+    shippingCost,
+    totalCost,
+    discountCode,
+    orderNotes,
+    trackingNumber,
+    returnRefundStatus,
+  } = item;
   const data = {
-    id: item._id,
-    ...item,
+    id: _id,
+    createdAt,
+    updatedAt,
+    shippingAddress,
+    billingAddress,
+    orderStatus,
+    paymentMethod,
+    paymentStatus,
+    subtotal,
+    tax,
+    shippingCost,
+    totalCost,
+    discountCode,
+    orderNotes,
+    trackingNumber,
+    returnRefundStatus,
   };
 
   if (needToInclude(query, "o.orderBy")) {
-    data.orderBy = item.orderBy ? userResource(item.orderBy) : null;
+    let orderBy = {}
+    if (item.orderBy?.length) {
+      orderBy = item.orderBy[0]
+    } else {
+      orderBy = item.orderBy
+    }
+    data.orderBy = userResource(orderBy)
   }
 
   if (needToInclude(query, "o.updatedBy")) {
-    data.updatedBy = item.updatedBy ? userResource(item.updatedBy) : null;
+    let updatedBy = {}
+    if (item.updatedBy?.length) {
+      updatedBy = item.updatedBy[0]
+    } else {
+      updatedBy = item.updatedBy
+    }
+    data.updatedBy = userResource(updatedBy)
   }
   if (needToInclude(query, "o.products")) {
     data.products = item?.products?.length
-      ? productResourceCollection(item.products)
+      ? productResourceCollection(item.products, {}, query, false)
       : [];
   }
-  if (!fromCollection) {
-    return { data };
-  }
+ 
 
-  return data;
+  return wrapData ? { data } : data;
 }
 
 function orderResourceCollection(items, additionalData = {}, query) {
-  const result = items.map((item) => orderResource(item, query, true));
+  const result = items.map((item) => orderResource(item, query, false));
   if (Object.keys(additionalData).length) {
     return {
       data: result,

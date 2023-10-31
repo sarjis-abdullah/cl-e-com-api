@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Model = require('../models/orderModel');
 const dotenv     = require("dotenv");
 const { needToInclude, sortAndPagination, getMetaInfo } = require('../utils');
@@ -9,10 +10,10 @@ exports.getAll = async (req, res) => {
   try {
     const pipeline = [];
 
-    if (req.query?.createdBy) {
+    if (req.query?.orderBy) {
       const q = {
         $match: {
-          createdBy: new mongoose.Types.ObjectId(req.query.createdBy),
+          orderBy: new mongoose.Types.ObjectId(req.query.orderBy),
         },
       }
       pipeline.push(q)
@@ -82,7 +83,7 @@ exports.create = async (req, res) => {
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
-    res.status(201).json(orderResource(savedItem));
+    res.status(201).json(orderResource(savedItem, req.query, true));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
