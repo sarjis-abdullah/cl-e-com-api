@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 const CLIENT_URL = process.env.CLIENT_URL ?? 'http://localhost:8000/'
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+const CURRENCY = "usd"
 const shippingData = shipping_address_collection = {
   allowed_countries: ['US', 'CA']
 },
@@ -13,41 +15,41 @@ shipping_options = [
       type: 'fixed_amount',
       fixed_amount: {
         amount: 0,
-        currency: 'usd',
+        currency: CURRENCY,
       },
       display_name: 'Free shipping',
       delivery_estimate: {
         minimum: {
           unit: 'business_day',
-          value: 5,
+          value: 2,
         },
         maximum: {
           unit: 'business_day',
-          value: 7,
+          value: 3,
         },
       },
     },
   },
-  {
-    shipping_rate_data: {
-      type: 'fixed_amount',
-      fixed_amount: {
-        amount: 1500,
-        currency: 'usd',
-      },
-      display_name: 'Next day air',
-      delivery_estimate: {
-        minimum: {
-          unit: 'business_day',
-          value: 1,
-        },
-        maximum: {
-          unit: 'business_day',
-          value: 1,
-        },
-      },
-    },
-  },
+  // {
+  //   shipping_rate_data: {
+  //     type: 'fixed_amount',
+  //     fixed_amount: {
+  //       amount: 1500,
+  //       currency: 'usd',
+  //     },
+  //     display_name: 'Next day air',
+  //     delivery_estimate: {
+  //       minimum: {
+  //         unit: 'business_day',
+  //         value: 1,
+  //       },
+  //       maximum: {
+  //         unit: 'business_day',
+  //         value: 1,
+  //       },
+  //     },
+  //   },
+  // },
 ]
 const invoice_creation = {
   enabled: true,
@@ -69,14 +71,13 @@ const invoice_creation = {
     footer: 'B2B Inc.',
   },
 }
-const CURRENCY = "usd"
 
 router.get("/create-payment-intent", async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    shipping_address_collection: {
-      allowed_countries: ["BD"],
-    },
+    // shipping_address_collection: {
+    //   allowed_countries: ["BD"],
+    // },
     shipping_options,
     line_items: [
       {
@@ -89,9 +90,7 @@ router.get("/create-payment-intent", async (req, res) => {
           // tax_behavior: 'exclusive',
         },
         adjustable_quantity: {
-          enabled: true,
-          minimum: 1,
-          maximum: 10,
+          enabled: false
         },
         quantity: 1,
       },
@@ -105,9 +104,9 @@ router.get("/create-payment-intent", async (req, res) => {
           // tax_behavior: 'exclusive',
         },
         adjustable_quantity: {
-          enabled: true,
-          minimum: 1,
-          maximum: 20,
+          enabled: false,
+          // minimum: 1,
+          // maximum: 20,
         },
         quantity: 2,
       },
@@ -115,9 +114,9 @@ router.get("/create-payment-intent", async (req, res) => {
     // automatic_tax: {
     //   enabled: true,
     // },
-    phone_number_collection: {
-      enabled: true,
-    },
+    // phone_number_collection: {
+    //   enabled: true,
+    // },
     mode: 'payment',
     success_url: `${CLIENT_URL}success`,
     cancel_url: `${CLIENT_URL}cancel`,
