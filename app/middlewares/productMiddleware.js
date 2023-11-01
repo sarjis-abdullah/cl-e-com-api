@@ -3,7 +3,7 @@ const Joi = require('joi');
 const createSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().allow(''),
-  brandId: Joi.string(),
+  brandId: Joi.string().allow(''),
   categories: Joi.array().required(),
   subcategoryId: Joi.string().required(),
   attachments: Joi.array(),
@@ -13,7 +13,7 @@ const createSchema = Joi.object({
 const updateSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().allow(''),
-  brandId: Joi.string().required(),
+  brandId: Joi.string().allow(''),
   subcategoryId: Joi.string().required(),
   categories: Joi.array().required(),
   attachments: Joi.array(),
