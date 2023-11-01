@@ -58,14 +58,6 @@ exports.getAll = async (req, res) => {
       }
       pipeline.push(q)
     }
-    if (true) {
-      const q = {
-        $match: {
-          _id: new mongoose.Types.ObjectId("653feb1aa935c61aac42cc9d"),
-        },
-      }
-      pipeline.push(q)
-    }
 
     if (req.query?.subcategoryId) {
       const q = {
