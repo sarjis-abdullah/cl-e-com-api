@@ -1,13 +1,7 @@
 const express = require("express");
-const controller = require("../controllers/brandController");
-const {
-  validateCreateItem,
-  validateUpdateItem,
-} = require("../middlewares/brandMiddleware");
 const multer = require("multer");
 const { setUserData } = require("../middlewares/userMiddleware");
-const controller2 = require("../controllers/attachmentController");
-const { validateCreateItem2 } = require("../middlewares/attachmentMiddleware");
+const controller = require("../controllers/attachmentController");
 const upload = require("../middlewares/multerMiddleware");
 const router = express.Router();
 const Joi = require("joi");
@@ -16,7 +10,8 @@ const createSchema = Joi.object({
   fileSource: Joi.required(),
   fileName: Joi.required(),
 });
-router.get("/", controller2.getAll);
+
+router.get("/", controller.getAll);
 
 router.post(
   "/",
@@ -47,14 +42,7 @@ router.post(
     next();
   },
   setUserData,
-  controller2.create
+  controller.create
 );
-// router.post('/', validateCreateItem, setUserData, controller.create);
-
-// router.get('/:id', controller.getById);
-
-// router.patch('/:id', validateUpdateItem, setUserData, controller.update);
-
-// router.delete('/:id', controller.delete);
 
 module.exports = router;
