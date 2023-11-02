@@ -132,7 +132,6 @@ exports.create = async (req, res) => {
           name: currentItem.productId.name,
           unitAmount: currentItem.sellingPrice,
         };
-        console.log(currentItem.quantity, "currentItem.quantity");
         return accumulator + currentItem.quantity;
       }, 0);
       
@@ -198,6 +197,10 @@ exports.create = async (req, res) => {
     const savedItem = await item.save();
     
     // const session = await getStripeSession(lineItems)
+    if (request.paymentMethod == "cash") {
+      res.json(orderResource(savedItem))
+      return
+    }
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       shipping_options,
