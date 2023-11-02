@@ -61,7 +61,7 @@ const stockSchema = new mongoose.Schema({
   },
   expiredDate: {
     type: Date,
-    required: true,
+    required: false,
   },
   createdAt: {
     type: Date,

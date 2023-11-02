@@ -9,7 +9,7 @@ router.get('/', controller.getAll);
 
 router.get('/:id', controller.getById);
 
-app.use(auth);
+router.use(auth);
 
 router.post('/', validateCreateItem, setUserData, controller.create);
 

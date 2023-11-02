@@ -7,7 +7,7 @@ const createSchema = Joi.object({
   sku: Joi.string(),
   purchasePrice: Joi.number().required(),
   sellingPrice: Joi.number().required(),
-  expiredDate: Joi.date().required(),
+  expiredDate: Joi.date().allow(''),
 });
 
 const updateSchema = Joi.object({
@@ -17,7 +17,7 @@ const updateSchema = Joi.object({
   sku: Joi.string(),
   purchasePrice: Joi.number().required(),
   sellingPrice: Joi.number().required(),
-  expiredDate: Joi.date().required(),
+  expiredDate: Joi.date().allow(''),
 });
 
 module.exports = {

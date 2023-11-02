@@ -213,8 +213,10 @@ exports.getById = async (req, res) => {
       modelQuery = modelQuery.populate("subcategoryId");
     }
     if (needToInclude(req.query, "product.stocks")){
-      console.log("653feb1aa935c61aac42cc9d");
       modelQuery = modelQuery.populate("stocks");
+    }
+    if (needToInclude(req.query, "product.attachments")){
+      modelQuery = modelQuery.populate("attachments");
     }
     
     const item = await modelQuery.exec();
