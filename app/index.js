@@ -52,6 +52,7 @@ app.use("/api/product", productRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/subcategory", subcategoryRoutes);
 app.use("/api", stripeRoutes);
+app.use("/api/stock", stockRoutes);
 //public routes will be here
 app.use(auth);
 //auth routes will be here
@@ -60,7 +61,7 @@ app.use("/api/task", taskRoutes);
 
 app.use("/api/order", orderRoutes);
 app.use("/api/brand", brandRoutes);
-app.use("/api/stock", stockRoutes);
+
 app.use("/api/review", reviewRoutes);
 app.use('/api/attachment', attachmentRoutes);
 
