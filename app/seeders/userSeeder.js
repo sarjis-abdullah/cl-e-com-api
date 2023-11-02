@@ -12,7 +12,7 @@ async function seedUsers() {
         { 
           name: 'Admin', 
           email: 'admin@gmail.com',
-          email: '01816111222',
+          phone: '01816111222',
           roles: "admin",
           password: hashedPassword
         },

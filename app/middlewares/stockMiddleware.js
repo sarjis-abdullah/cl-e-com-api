@@ -12,11 +12,11 @@ const createSchema = Joi.object({
 
 const updateSchema = Joi.object({
   productId: Joi.string().required(),
-  status: Joi.string().required(),
+  status: Joi.string().allow(''),
   quantity: Joi.number().required(),
   sku: Joi.string(),
-  purchasePrice: Joi.number().required(),
-  sellingPrice: Joi.number().required(),
+  purchasePrice: Joi.number().allow(''),
+  sellingPrice: Joi.number().allow(''),
   expiredDate: Joi.date().allow(''),
 });
 

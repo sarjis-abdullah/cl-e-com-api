@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const Model = require("../models/orderModel");
 const dotenv = require("dotenv");
-const { needToInclude, sortAndPagination, getMetaInfo } = require("../utils");
+const nodemailer = require('nodemailer');
+
+const { needToInclude, sortAndPagination, getMetaInfo, useNodeMailer } = require("../utils");
 const {
   orderResourceCollection,
   orderResource,
@@ -10,6 +12,7 @@ const Product = require("../models/productModel");
 const Stock = require("../models/stockModel");
 const { productResource } = require("../resources/newProductResources");
 const { stockResourceCollection } = require("../resources/stockResources");
+const User = require("../models/userModel");
 
 dotenv.config();
 const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:8000/";
@@ -119,6 +122,37 @@ async function getStripeSession(lineItems){
 
 }
 
+function sendMail(order, customer){
+  const mailOptions = {
+    from: customer.email,
+    to: 'admin@gmail.com', // Recipient's email
+    subject: 'New Order Received',
+    html: `
+      <p>Hello,</p>
+      <p>A new order has been received. Here are the details:</p>
+      <ul>
+        <li>Order ID: ${order._id}</li>
+        <li>Customer Name: ${customer.name}</li>
+        <li>Order Total: $${order.totalCost}</li>
+        <li>Shipping Address: ${order.shippingAddress}</li>
+      </ul>
+      <p>Thank you!</p>
+    `,
+  };
+
+  try {
+    useNodeMailer.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email: ' + error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 exports.create = async (req, res) => {
   try {
     const request = JSON.parse(JSON.stringify(req.body));
@@ -198,6 +232,8 @@ exports.create = async (req, res) => {
     
     // const session = await getStripeSession(lineItems)
     if (request.paymentMethod == "cash") {
+      const customer = await User.findById(savedItem.orderBy)
+      sendMail(savedItem, customer)
       res.json(orderResource(savedItem))
       return
     }

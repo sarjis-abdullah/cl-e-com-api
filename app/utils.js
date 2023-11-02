@@ -1,3 +1,5 @@
+const nodemailer = require('nodemailer');
+
 function getPageLimit(query){
   const page = parseInt(query.page) || 1; 
   const limit = parseInt(query.limit) || 10;
@@ -75,10 +77,20 @@ function getMetaInfo(result, query) {
   }
 }
 
+const transport = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASSWORD
+  }
+});
+
 module.exports = {
   getMetaData,
   sortAndPaginate,
   needToInclude,
   sortAndPagination,
-  getMetaInfo
+  getMetaInfo,
+  useNodeMailer: transport
 }
