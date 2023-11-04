@@ -1,9 +1,21 @@
 const mongoose = require('mongoose');
 const User = require('../models/userModel'); // Import your User model
 const bcrypt = require('bcrypt');
+const Category = require('../models/categoryModel');
 
 async function seedUsers() {
   try {
+    const categoryESell = "E-sell"
+    const category = await Category.find({name: categoryESell});
+    if (!category.name) {
+      console.log(categoryESell + " category created!");
+      const data = {name: categoryESell}
+      const item = new Category(data);
+      const savedItem = await item.save();
+    }else {
+      console.log(categoryESell + " already exist!");
+    }
+    
     // Check if there are already Users in the database
     const existingUsers = await User.find({email: 'admin@gmail.com'});
     if (!existingUsers) {

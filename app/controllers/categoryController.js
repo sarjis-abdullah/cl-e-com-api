@@ -83,6 +83,16 @@ exports.getAll = async (req, res) => {
     const additionalData = getMetaInfo(result, req.query);
 
     const resources = categoryResourceCollection(result.items, additionalData, req.query)
+    const esell = result.items.find(i=>i.name == "E-sell")
+    const sortDirection = req.query?.sortDirection === "desc" ? -1 : 1;
+    if (esell) {
+      if (sortDirection == -1) {
+        result.items.push(esell)
+      } else {
+        result.items.unshift(esell)
+      }
+      
+    }
     res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
