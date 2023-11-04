@@ -1,7 +1,7 @@
 const { needToInclude } = require("../utils");
 const { attachmentResourceCollection } = require("./attachmentResources");
 const {brandResource, brandResourceCollection} = require("./brandResources");
-const { categoryResourceCollection } = require("./categoryResources");
+const { categoryResourceCollection, categoryResource } = require("./categoryResources");
 const { stockResourceCollection } = require("./stockResources");
 const { subcategoryResource } = require("./subcategoryResources");
 const { userResource, userResourceCollection } = require("./userResources");
@@ -26,8 +26,9 @@ function productResource(item, query = {}) {
   if (needToInclude(query, 'product.updatedBy')) {
     data.updatedBy = item.updatedBy ? userResourceCollection(item.updatedBy) : null
   }
-  if (needToInclude(query, 'product.categories')) {
-    data.categories = categoryResourceCollection(item.categories)
+  if (needToInclude(query, 'product.category')) {
+    const category = item.category?.length ? item.category[0] : item.categoryId
+    data.category = categoryResource(category)
   }
   if (needToInclude(query, 'product.attachments')) {
     data.attachments = attachmentResourceCollection(item.attachments)

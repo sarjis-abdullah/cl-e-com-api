@@ -67,17 +67,13 @@ exports.getAll = async (req, res) => {
       }
       pipeline.push(q)
     }
-
-    if (req.query?.categoryIds && Array.isArray(req.query.categoryIds)) {
-      const categoryIds = req.query.categoryIds.map((categoryId) => new mongoose.Types.ObjectId(categoryId));
-      const categoryMatch = {
+    if (req.query?.categoryId) {
+      const q = {
         $match: {
-          categories: {
-            $in: categoryIds,
-          },
+          categoryId: new mongoose.Types.ObjectId(req.query.categoryId),
         },
-      };
-      pipeline.push(categoryMatch);
+      }
+      pipeline.push(q)
     }
 
     if (req.query.searchQuery) {
@@ -135,13 +131,13 @@ exports.getAll = async (req, res) => {
         },
       });
     }
-    if (needToInclude(req.query, "product.categories")) {
+    if (needToInclude(req.query, "product.category")) {
       pipeline.push({
         $lookup: {
           from: "categories", // The name of the Category collection
-          localField: "categories", // The field in Product that links to Category
+          localField: "categoryId", // The field in Product that links to Category
           foreignField: "_id", // The field in Category to match with
-          as: "categories", // The name of the new field to store the category data
+          as: "category", // The name of the new field to store the category data
         },
       });
     }
@@ -172,7 +168,8 @@ exports.getAll = async (req, res) => {
     const [result] = await Model.aggregate(pipeline);
 
     const additionalData = getMetaInfo(result, req.query);
-
+    // res.json(result.items);
+    // return
     // console.log(result.items, "result.items");
     const resources = productResourceCollection(
       result.items,
@@ -190,12 +187,7 @@ exports.create = async (req, res) => {
   try {
     const data = { ...req.body };
     const item = new Model(data);
-
-    // Todo
-    const ids = req.body.categories;
-    const categories = await Category.find({ _id: { $in: ids } });
     const newProduct = await item.save();
-    newProduct.categories = categories;
     const resource = productResource(newProduct, req.query);
     res.status(201).json(resource);
   } catch (err) {
@@ -206,8 +198,8 @@ exports.create = async (req, res) => {
 exports.getById = async (req, res) => {
   try {
     let modelQuery = Model.findOne({_id: req.params.id})
-    if (needToInclude(req.query, "product.categories")){
-      modelQuery = modelQuery.populate("categories");
+    if (needToInclude(req.query, "product.category")){
+      modelQuery = modelQuery.populate("categoryId");
     }
     if (needToInclude(req.query, "product.subcategory")){
       modelQuery = modelQuery.populate("subcategoryId");
@@ -223,7 +215,6 @@ exports.getById = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
-    console.log(item, 63636);
     const resource = productResource(item, req.query);
     res.json(resource);
   } catch (err) {
