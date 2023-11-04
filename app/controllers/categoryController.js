@@ -82,17 +82,19 @@ exports.getAll = async (req, res) => {
 
     const additionalData = getMetaInfo(result, req.query);
 
-    const resources = categoryResourceCollection(result.items, additionalData, req.query)
-    const esell = result.items.find(i=>i.name == "E-sell")
-    const sortDirection = req.query?.sortDirection === "desc" ? -1 : 1;
-    if (esell) {
-      if (sortDirection == -1) {
-        result.items.push(esell)
-      } else {
-        result.items.unshift(esell)
-      }
-      
+
+    const hasEsell = result.items.find(i=>i.name == "E-sell")
+    if (hasEsell) {
+      const data = categoryResource(hasEsell)
+      result.items = result.items.filter(i=> i.name != 'E-sell')
+      result.items.unshift({...data, _id: data.id})
+    }else {
+      const category = await Model.findOne({name: "E-sell"});
+      const data = categoryResource(category)
+      result.items.unshift({...data, _id: data.id})
     }
+    const resources = categoryResourceCollection(result.items, additionalData, req.query)    
+    
     res.json(resources);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -101,9 +103,19 @@ exports.getAll = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
+    if (req.body.name == 'E-sell') {
+      const category = await Model.findOne({name: req.body.name});
+      if (category.name) {
+        const data = categoryResource(category)
+        res.status(201).json(categoryResource(data));
+        return
+      }
+    }
+    
     const data = {...req.body}
     const item = new Model(data);
     const savedItem = await item.save();
+    
     res.status(201).json(categoryResource(savedItem));
   } catch (err) {
     res.status(400).json({ error: err.message });

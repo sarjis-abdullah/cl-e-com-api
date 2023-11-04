@@ -7,7 +7,7 @@ async function seedUsers() {
   try {
     const categoryESell = "E-sell"
     const category = await Category.findOne({name: categoryESell});
-    if (!category.name) {
+    if (!category || !category.name) {
       console.log(categoryESell + " category created!");
       const data = {name: categoryESell}
       const item = new Category(data);
