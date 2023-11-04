@@ -48,6 +48,7 @@ To create admin seed user
 
 ```sh
 node app/seeders/userSeeder.js
+node app/seeders/db-seed.js
 ```
 
 Note that we are overriding the environment variable set in `.env` file because we don't want our data erased by the tests.
