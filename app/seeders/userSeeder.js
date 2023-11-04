@@ -6,7 +6,7 @@ const Category = require('../models/categoryModel');
 async function seedUsers() {
   try {
     const categoryESell = "E-sell"
-    const category = await Category.find({name: categoryESell});
+    const category = await Category.findOne({name: categoryESell});
     if (!category.name) {
       console.log(categoryESell + " category created!");
       const data = {name: categoryESell}
