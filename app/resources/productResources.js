@@ -12,6 +12,7 @@ function productResource(item, query = {}) {
     id: _id,
     createdAt, updatedAt, name, description
   };
+  console.log(data, "data");
 
   if (needToInclude(query, 'product.stocks')) {
     data.stocks = stockResourceCollection(item.stocks)
@@ -38,7 +39,7 @@ function productResource(item, query = {}) {
     } else {
       sub = item.subcategoryId
     }
-    data.subcategory = subcategoryResource(sub)
+    data.subcategory = sub? subcategoryResource(sub) : null
   }
   return data
 }
