@@ -15,7 +15,7 @@ const { stockResourceCollection } = require("../resources/stockResources");
 const User = require("../models/userModel");
 
 dotenv.config();
-const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:8000/";
+const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:3000/";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const CURRENCY = "usd";
