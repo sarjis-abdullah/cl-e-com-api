@@ -28,7 +28,10 @@ function productResource(item, query = {}) {
   }
   if (needToInclude(query, 'product.category')) {
     const category = item.category?.length ? item.category[0] : item.categoryId
-    data.category = categoryResource(category)
+    if (category) {
+      data.category = categoryResource(category)
+    }
+    
   }
   if (needToInclude(query, 'product.attachments')) {
     data.attachments = attachmentResourceCollection(item.attachments)
