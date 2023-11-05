@@ -3,7 +3,7 @@ const Joi = require('joi');
 const orderValidationSchema = Joi.object({
   orderBy: Joi.string().required(),
   shippingAddress: Joi.string().required(),
-  billingAddress: Joi.string(),
+  billingAddress: Joi.string().allow(''),
   orderStatus: Joi.string().valid('pending', 'processing', 'shipped', 'delivered').default('pending'),
   paymentMethod: Joi.string().valid('card', 'cash').default('card'),
   paymentStatus: Joi.string().valid('paid', 'pending', 'failed').default('pending'),
