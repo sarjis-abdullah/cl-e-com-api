@@ -76,6 +76,15 @@ exports.getAll = async (req, res) => {
       pipeline.push(q)
     }
 
+    if (req.query?.productId) {
+      const q = {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.query.productId),
+        },
+      }
+      pipeline.push(q)
+    }
+
     if (req.query.searchQuery) {
       const searchQuery = req.query.searchQuery
       const sq = {
