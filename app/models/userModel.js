@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
     {
       type: String,
       enum: USER_ROLES,
-      default: "user",
+      default: "customer",
     },
   ],
   createdAt: {

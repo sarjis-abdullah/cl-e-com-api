@@ -18,7 +18,8 @@ async function seedUsers() {
     
     // Check if there are already Users in the database
     const existingUsers = await User.find({email: 'admin@gmail.com'});
-    if (!existingUsers) {
+    console.log(existingUsers, "existingUsers");
+    if (!existingUsers || existingUsers.length < 1) {
       const hashedPassword = await bcrypt.hash("admin123", 10);
       const defaultUsers = [
         { 
@@ -26,6 +27,7 @@ async function seedUsers() {
           email: 'admin@gmail.com',
           phone: '01816111222',
           roles: "admin",
+          type: "admin",
           password: hashedPassword
         },
         // { name: 'Jane Smith', email: 'janesmith@example.com' },

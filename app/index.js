@@ -36,6 +36,7 @@ const stockRoutes = require("./routes/stockRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const subcategoryRoutes = require("./routes/subcategoryRoutes");
 const stripeRoutes = require("./routes/stripeRoutes");
+const dashboardRoutes = require("./routes/dashboardRouter");
 const reviewRoutes = require("./routes/reviewRoutes");
 const attachmentRoutes = require('./routes/newAttachmentRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -58,6 +59,7 @@ app.use(auth);
 //auth routes will be here
 
 app.use("/api/task", taskRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use("/api/order", orderRoutes);
 app.use("/api/brand", brandRoutes);
