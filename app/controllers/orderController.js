@@ -123,6 +123,7 @@ async function getStripeSession(lineItems){
 }
 
 function sendMail(order, customer){
+  console.log(customer);
   const mailOptions = {
     from: customer.email,
     to: 'admin@gmail.com', // Recipient's email
@@ -161,6 +162,7 @@ exports.create = async (req, res) => {
       let stQuery = Stock.find({ productId: item.id });
       stQuery = stQuery.populate("productId");
       const stocks = await stQuery.exec();
+      console.log(stocks, "stocks");
       const availableQuantity = stocks.reduce((accumulator, currentItem) => {
         product = {
           name: currentItem.productId.name,
@@ -246,7 +248,8 @@ exports.create = async (req, res) => {
       cancel_url: `${CLIENT_URL}cancel`,
     });
 
-    res.redirect(session.url)
+    res.json(session)
+    //res.redirect(session)
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
