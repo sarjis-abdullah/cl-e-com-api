@@ -54,19 +54,13 @@ exports.getAll = async (req, res) => {
       };
       pipeline.push(q);
     }
-
-    if (req.query.searchQuery) {
-      // const searchQuery = req.query.searchQuery
-      // const sq = {
-      //   $match: {
-      //     $or: [
-      //       { name: { $regex: searchQuery, $options: 'i' } },
-      //       { 'stocks.sku': { $regex: searchQuery, $options: 'i' } },
-      //       { createdBy: { $in: [searchQuery] } },
-      //     ],
-      //   },
-      // }
-      // pipeline.push(sq)
+    if (req.query?.orderId) {
+      const q = {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.query.orderId),
+        },
+      };
+      pipeline.push(q);
     }
 
     if (needToInclude(req.query, "o.orderBy")) {

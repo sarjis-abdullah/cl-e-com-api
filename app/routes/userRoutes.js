@@ -1,19 +1,19 @@
 const express = require('express');
-const taskController = require('../controllers/userController');
+const controller = require('../controllers/userController');
 const { validateLogin, validateRegistration, checkDuplicate, auth } = require('../middlewares/userMiddleware');
 
 const router = express.Router();
 
-router.get('/', auth, taskController.getAll);
+router.get('/', auth, controller.getAll);
 
-router.post('/register', validateRegistration, checkDuplicate, taskController.register);
+router.post('/register', validateRegistration, checkDuplicate, controller.register);
 
-router.post('/login', validateLogin, taskController.login);
+router.post('/login', validateLogin, controller.login);
 
-router.get('/:id',auth, taskController.getById);
+router.get('/:id',auth, controller.getById);
 
-// router.patch('/:id', validateUpdateTask, taskController.update);
+// router.patch('/:id', validateUpdateTask, controller.update);
 
-router.delete('/:id',auth, taskController.delete);
+router.delete('/:id',auth, controller.delete);
 
 module.exports = router;
