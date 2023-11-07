@@ -16,6 +16,17 @@ const userRegisterSchema = Joi.object({
   type: Joi.string().valid("user", "admin", "customer"),
   password: Joi.string().min(6).required(),
 });
+const validateUpdateSchema = Joi.object({
+  name: Joi.string().min(3).max(20).required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string(),
+  address: Joi.string(),
+  city: Joi.string(),
+  zip: Joi.string(),
+  state: Joi.string(),
+  type: Joi.string().valid("user", "admin", "customer"),
+  password: Joi.string().min(6).required(),
+});
 
 const checkDuplicate = async (req, res, next) => {
   try {
@@ -92,6 +103,13 @@ module.exports = {
   },
   validateRegistration: (req, res, next) => {
     const { error } = userRegisterSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    next();
+  },
+  validateUpdate: (req, res, next) => {
+    const { error } = validateUpdateSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }

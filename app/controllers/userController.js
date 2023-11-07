@@ -82,7 +82,7 @@ exports.update = async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json(getUser(userResource(item)));
+    res.json(userResource(item));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
