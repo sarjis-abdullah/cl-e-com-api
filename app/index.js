@@ -40,6 +40,7 @@ const dashboardRoutes = require("./routes/dashboardRouter");
 const reviewRoutes = require("./routes/reviewRoutes");
 const attachmentRoutes = require('./routes/newAttachmentRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 const { notFound, defaultError } = require("./middlewares/errorMiddleware");
 const { auth } = require("./middlewares/userMiddleware");
 
@@ -54,6 +55,7 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/subcategory", subcategoryRoutes);
 app.use("/api", stripeRoutes);
 app.use("/api/stock", stockRoutes);
+app.use("/api/contact", contactRoutes);
 //public routes will be here
 app.use(auth);
 //auth routes will be here
