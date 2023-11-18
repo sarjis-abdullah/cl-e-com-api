@@ -51,6 +51,11 @@ node app/seeders/userSeeder.js
 node app/seeders/db-seed.js
 ```
 
+To start MongoDB Server in Linux/Ubuntu
+```sh
+sudo systemctl start mongod
+```
+
 Note that we are overriding the environment variable set in `.env` file because we don't want our data erased by the tests.
 
 Note: The difference between exec and run is that, exec executes the command within the running container and run will spin up a new container to run that command. So if you want to run only the tests without docker-compose up, you may do so by running `docker-compose run -e MONGODB_URL=mongodb://mongo:27017/my_app_test node npm test`

@@ -19,28 +19,33 @@ const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:3000/";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const CURRENCY = "usd";
-shipping_options = [
-  {
-    shipping_rate_data: {
-      type: "fixed_amount",
-      fixed_amount: {
-        amount: 0,
-        currency: CURRENCY,
-      },
-      display_name: "Free shipping",
-      delivery_estimate: {
-        minimum: {
-          unit: "business_day",
-          value: 2,
+
+function getShippingOptions(body) {
+  const hasShippingCost = body?.shippingCost ? true : false
+  const shippingCost = hasShippingCost ? body.shippingCost * 100 : 0
+  return [
+    {
+      shipping_rate_data: {
+        type: "fixed_amount",
+        fixed_amount: {
+          amount: shippingCost,
+          currency: CURRENCY,
         },
-        maximum: {
-          unit: "business_day",
-          value: 3,
+        display_name: hasShippingCost ? "Delivery cost" : "Free shipping",
+        delivery_estimate: {
+          minimum: {
+            unit: "business_day",
+            value: 1,
+          },
+          maximum: {
+            unit: "business_day",
+            value: 3,
+          },
         },
       },
     },
-  },
-];
+  ];
+}
 
 exports.getAll = async (req, res) => {
   try {
@@ -156,7 +161,6 @@ exports.create = async (req, res) => {
       let stQuery = Stock.find({ productId: item.id });
       stQuery = stQuery.populate("productId");
       const stocks = await stQuery.exec();
-      console.log(stocks, "stocks");
       const availableQuantity = stocks.reduce((accumulator, currentItem) => {
         product = {
           name: currentItem.productId.name,
@@ -196,7 +200,7 @@ exports.create = async (req, res) => {
             product_data: {
               name: product.name,
             },
-            unit_amount: product.unitAmount,
+            unit_amount: product.unitAmount * 100,
           },
           adjustable_quantity: {
             enabled: false,
@@ -235,7 +239,7 @@ exports.create = async (req, res) => {
     }
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      shipping_options,
+      shipping_options: getShippingOptions(req.body),
       line_items: lineItems,
       mode: "payment",
       success_url: `${CLIENT_URL}success?orderId=${savedItem._id}`,
