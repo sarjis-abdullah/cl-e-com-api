@@ -5,7 +5,7 @@ const createSchema = Joi.object({
   description: Joi.string().allow(''),
   brandId: Joi.string().allow(''),
   categoryId: Joi.string().required(),
-  subcategoryId: Joi.string().allow(''),
+  subcategoryId: Joi.string().allow(null),
   attachments: Joi.array(),
   type: Joi.string().valid('Physical', 'Online'),
 });
@@ -14,7 +14,7 @@ const updateSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().allow(''),
   brandId: Joi.string().allow(''),
-  subcategoryId: Joi.string().allow(''),
+  subcategoryId: Joi.string().allow(null),
   categoryId: Joi.string().required(),
   attachments: Joi.array(),
   type: Joi.string().valid('Physical', 'Online'),
