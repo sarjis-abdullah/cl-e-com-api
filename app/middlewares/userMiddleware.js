@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const userRegisterSchema = Joi.object({
-  name: Joi.string().min(3).max(20).required(),
+  name: Joi.string().min(3).max(50).required(),
   email: Joi.string().email().required(),
   phone: Joi.string(),
   address: Joi.string(),
@@ -17,7 +17,7 @@ const userRegisterSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 const validateUpdateSchema = Joi.object({
-  name: Joi.string().min(3).max(20).required(),
+  name: Joi.string().min(3).max(50).required(),
   email: Joi.string().email().required(),
   phone: Joi.string(),
   address: Joi.string(),

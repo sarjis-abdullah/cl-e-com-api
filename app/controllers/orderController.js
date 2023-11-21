@@ -243,7 +243,7 @@ exports.create = async (req, res) => {
       line_items: lineItems,
       mode: "payment",
       success_url: `${CLIENT_URL}success?orderId=${savedItem._id}`,
-      cancel_url: `${CLIENT_URL}cancel`,
+      cancel_url: `${CLIENT_URL}cancel?orderId=${savedItem._id}`,
     });
 
     res.json(session)

@@ -4,7 +4,7 @@ const orderValidationSchema = Joi.object({
   orderBy: Joi.string().required(),
   shippingAddress: Joi.string().required(),
   billingAddress: Joi.string().allow(''),
-  orderStatus: Joi.string().valid('pending', 'processing', 'shipped', 'delivered').default('pending'),
+  orderStatus: Joi.string().valid('pending', 'processing', 'shipped', 'delivered', 'cancelled').default('pending'),
   paymentMethod: Joi.string().valid('card', 'cash').default('card'),
   paymentStatus: Joi.string().valid('paid', 'pending', 'failed').default('pending'),
   shippingMethod: Joi.string().allow(''),
@@ -19,7 +19,7 @@ const orderValidationSchema = Joi.object({
   returnRefundStatus: Joi.string().allow(''),
 });
 const validateUpdateItem = Joi.object({
-  orderStatus: Joi.string().valid('pending', 'processing',"confirmed", 'shipped', 'delivered').default('pending'),
+  orderStatus: Joi.string().valid('pending', 'processing',"confirmed", 'shipped', 'delivered', 'cancelled').default('pending'),
   paymentStatus: Joi.string().valid('paid', 'pending', 'failed').default('pending'),
 });
 
