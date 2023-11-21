@@ -59,6 +59,21 @@ exports.getAll = async (req, res) => {
       };
       pipeline.push(q);
     }
+    if (req.query?.orderStatus) {
+      const q = {
+        $match: {
+          orderStatus: req.query.orderStatus,
+        },
+      };
+      pipeline.push(q);
+    }else{
+      const q = {
+        $match: {
+          orderStatus: { $ne: 'cancelled' },
+        },
+      };
+      pipeline.push(q);
+    }
     if (req.query?.orderId) {
       const q = {
         $match: {
@@ -223,8 +238,11 @@ exports.create = async (req, res) => {
       request.totalCost += request.tax
     }
     if (request.shippingCost) {
+      request.shippingCost = parseFloat(request.shippingCost) * 100
       request.totalCost += request.shippingCost
+      console.log(request.totalCost, 'request.totalCost');
     }
+    console.log(request.totalCost, 'request.totalCost', typeof request.totalCost);
 
     request.products = request.products.map(item=> item.id)
     const item = new Model(request);

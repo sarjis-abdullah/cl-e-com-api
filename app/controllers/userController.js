@@ -27,7 +27,7 @@ exports.register = async (req, res) => {
   try {
     const newUser = new Model(req.body);
     const savedUser = await newUser.save();
-    const response = userResource(getUser(savedUser))
+    const response = userResource(savedUser)
     res.status(201).json(response);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign({ userId: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
-    const response = userResource(getUser(user))
+    const response = userResource(user)
 
     res.json({ token, user: response });
   } catch (err) {
@@ -75,6 +75,13 @@ exports.getById = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
+    console.log(req.body.updatedBy, req.params.id);
+    if (req.body.updatedBy !== req.params.id) {
+      return res.status(403).json({ message: 'Un-authorized access denied!' });
+    }
+    if (req.body.password) {
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+    }
     const item = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,

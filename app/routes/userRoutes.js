@@ -1,6 +1,6 @@
 const express = require('express');
 const controller = require('../controllers/userController');
-const { validateLogin, validateRegistration, checkDuplicate, auth, validateUpdate } = require('../middlewares/userMiddleware');
+const { validateLogin, validateRegistration, checkDuplicate, auth, validateUpdate, setUserData } = require('../middlewares/userMiddleware');
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.post('/login', validateLogin, controller.login);
 
 router.get('/:id',auth, controller.getById);
 
-router.patch('/:id', validateUpdate, controller.update);
+router.patch('/:id',auth, validateUpdate, setUserData, controller.update);
 
 // router.delete('/:id',auth, controller.delete);
 
