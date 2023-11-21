@@ -13,7 +13,7 @@ const orderSchema = new mongoose.Schema(
     },
     billingAddress: {
       type: String,
-      required: true,
+      required: false,
     },
     orderStatus: {
       type: String,
