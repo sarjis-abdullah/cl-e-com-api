@@ -48,6 +48,14 @@ const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
+const forgetPasswordSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+const resetPasswordSchema = Joi.object({
+  // id: Joi.string().required(),
+  token: Joi.string().required(),
+  newPassword: Joi.string().required(),
+});
 
 // Middleware to check and verify JWT tokens
 const authenticateToken = (req, res, next) => {
@@ -117,6 +125,20 @@ module.exports = {
   },
   validateLogin: (req, res, next) => {
     const { error } = loginSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    next();
+  },
+  validateForgetPassword: (req, res, next) => {
+    const { error } = forgetPasswordSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    next();
+  },
+  validateResetPassword: (req, res, next) => {
+    const { error } = resetPasswordSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }

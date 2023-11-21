@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  resetToken: {
+    type: String,
+    required: false,
+  },
   type: {
     type: String,
     enum: USER_ROLES,
