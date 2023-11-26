@@ -150,7 +150,7 @@ function sendMail(order, customer){
         <li>Customer Name: ${customer.name}</li>
         <li>Order Total: $${order.totalCost/100}</li>
         <li>Shipping Address: ${order.shippingAddress}</li>
-        ${order.orderDescription && `<li>Description: ${order.orderDescription}</li>`}
+        ${order.orderDescription ? `<li>Description: ${order.orderDescription}</li>` : ""}
       </ul>
       <p>Thank you!</p>
     `,
