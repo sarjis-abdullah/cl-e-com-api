@@ -4,6 +4,7 @@ const orderValidationSchema = Joi.object({
   orderBy: Joi.string().required(),
   shippingAddress: Joi.string().required(),
   billingAddress: Joi.string().allow(''),
+  orderDescription: Joi.string().allow(''),
   orderStatus: Joi.string().valid('pending', 'processing', 'shipped', 'delivered', 'cancelled').default('pending'),
   paymentMethod: Joi.string().valid('card', 'cash').default('card'),
   paymentStatus: Joi.string().valid('paid', 'pending', 'failed').default('pending'),
