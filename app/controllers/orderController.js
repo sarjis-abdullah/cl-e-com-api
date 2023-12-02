@@ -148,7 +148,7 @@ function sendMail(order, customer){
       <ul>
         <li>Order ID: ${order._id}</li>
         <li>Customer Name: ${customer.name}</li>
-        <li>Order Total: $${order.totalCost/100}</li>
+        <li>Order Total: ৳${order.totalCost/100}</li>
         <li>Shipping Address: ${order.shippingAddress}</li>
         ${order.orderDescription ? `<li>Description: ${order.orderDescription}</li>` : ""}
       </ul>
